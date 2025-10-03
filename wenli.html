@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>数据解码二十四节气 · 时光里的中国智慧</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* 全局样式 - 高级色彩优化 */
+    :root {
+      --color-primary: #8c7053; /* 雅致棕褐色作为主色调 */
+      --color-secondary: #b89c7e; /* 浅棕色作为辅助色 */
+      --color-accent: #d9b99b; /* 暖棕色作为强调色 */
+      --color-season-spring: #7d9d6a; /* 春季绿 */
+      --color-season-summer: #d4a06a; /* 夏季橙 */
+      --color-season-autumn: #c2703d; /* 秋季红褐 */
+      --color-season-winter: #6b8e9e; /* 冬季青蓝 */
+      --color-text: #3a3226; /* 深棕色文本 */
+      --color-text-light: #705f48; /* 浅棕色文本 */
+      --color-bg: #f8f5f1; /* 米白色背景 */
+      --color-card: #ffffff; /* 卡片背景 */
+      --shadow-light: 0 4px 20px rgba(0,0,0,0.05);
+      --shadow-medium: 0 8px 30px rgba(0,0,0,0.08);
+      --shadow-strong: 0 12px 40px rgba(0,0,0,0.12);
+      --transition-standard: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Noto Serif SC", "Microsoft YaHei", "PingFang SC", serif;
+      background-color: var(--color-bg);
+      background-image: url("https://img.icons8.com/fluency/96/000000/paper-texture.png");
+      color: var(--color-text);
+      overflow-x: hidden;
+      line-height: 1.7;
+    }
+
+    /* 渐变背景 - 更富层次感的自然色调 */
+    .gradient-bg {
+      background: linear-gradient(135deg, #3a3226, #5c4b36, #2d271e);
+      color: #f5f1ea;
+      position: relative;
+      overflow: hidden;
+    }
+    .gradient-bg::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("https://picsum.photos/id/1063/1200/800");
+      background-size: cover;
+      background-position: center;
+      opacity: 0.15;
+      z-index: 0;
+    }
+    .gradient-bg > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 节气装饰元素 */
+    .season-decoration {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      opacity: 0.15;
+      z-index: 0;
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+    .spring-decoration {
+      background-image: url("https://img.icons8.com/fluency/96/000000/leaf.png");
+    }
+    .summer-decoration {
+      background-image: url("https://img.icons8.com/fluency/96/000000/sun.png");
+    }
+    .autumn-decoration {
+      background-image: url("https://img.icons8.com/fluency/96/000000/apple.png");
+    }
+    .winter-decoration {
+      background-image: url("https://img.icons8.com/fluency/96/000000/snow.png");
+    }
+
+    /* 标题区优化 */
+    header {
+      padding: 70px 5% 50px;
+      text-align: center;
+      position: relative;
+    }
+    header::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 3em;
+      letter-spacing: 10px;
+      text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+      font-weight: 700;
+      position: relative;
+      display: inline-block;
+      padding: 0 25px;
+      margin-bottom: 15px;
+    }
+    header h1::after, header h1::before {
+      content: "❦";
+      color: rgba(255,255,255,0.6);
+      margin: 0 18px;
+    }
+    .subtitle {
+      margin-top: 15px;
+      font-size: 1.25em;
+      opacity: 0.9;
+      letter-spacing: 3px;
+      font-style: italic;
+      position: relative;
+      display: inline-block;
+      padding: 5px 20px;
+    }
+    .subtitle::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 10%;
+      width: 80%;
+      height: 1px;
+      background: rgba(255,255,255,0.3);
+    }
+
+    /* 装饰性分隔线升级 */
+    .divider {
+      width: 120px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+      margin: 40px auto;
+      position: relative;
+    }
+    .divider::after {
+      content: "❧";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background-color: var(--color-bg);
+      padding: 0 12px;
+      color: var(--color-primary);
+      font-size: 1.2em;
+    }
+
+    /* 动态导语优化 */
+    .intro {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 35px 45px;
+      line-height: 1.8;
+      font-size: 1.15em;
+      background: rgba(255,255,255,0.92);
+      border-radius: 12px;
+      border-left: 4px solid var(--color-primary);
+      box-shadow: var(--shadow-light);
+      position: relative;
+    }
+    .intro::before {
+      content: """;
+      position: absolute;
+      top: -15px;
+      left: 25px;
+      font-size: 6em;
+      color: rgba(140, 112, 83, 0.08);
+      font-family: Georgia, serif;
+      line-height: 1;
+    }
+
+    /* 节气时间轴 */
+    .solar-timeline {
+      max-width: 1050px;
+      margin: 20px auto 60px;
+      height: 6px;
+      background: linear-gradient(90deg, 
+        var(--color-season-spring), 
+        var(--color-season-summer), 
+        var(--color-season-autumn), 
+        var(--color-season-winter));
+      border-radius: 3px;
+      position: relative;
+    }
+    .timeline-marker {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--color-card);
+      border: 2px solid var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(140, 112, 83, 0.1);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .timeline-marker:hover {
+      transform: translate(-50%, -50%) scale(1.5);
+      box-shadow: 0 0 0 5px rgba(140, 112, 83, 0.2);
+    }
+    .timeline-label {
+      position: absolute;
+      top: 20px;
+      transform: translateX(-50%);
+      font-size: 0.85em;
+      color: var(--color-text-light);
+      white-space: nowrap;
+      transition: all 0.3s ease;
+    }
+    .timeline-marker:hover + .timeline-label {
+      color: var(--color-primary);
+      font-weight: bold;
+    }
+
+    /* 模块通用样式升级 */
+    .module {
+      max-width: 1050px;
+      margin: 70px auto;
+      background: var(--color-card);
+      border-radius: 12px;
+      box-shadow: var(--shadow-medium);
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition-standard);
+      border: 1px solid rgba(140, 112, 83, 0.08);
+    }
+    .module:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-strong);
+    }
+    .module::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+    }
+    .module.spring::before { background: var(--color-season-spring); }
+    .module.summer::before { background: var(--color-season-summer); }
+    .module.autumn::before { background: var(--color-season-autumn); }
+    .module.winter::before { background: var(--color-season-winter); }
+    .module.interactive::before { 
+      background: linear-gradient(90deg, 
+        var(--color-season-spring), 
+        var(--color-season-summer),
+        var(--color-season-autumn),
+        var(--color-season-winter)); 
+    }
+    
+    h2 {
+      color: var(--color-primary);
+      border-bottom: 2px solid rgba(140, 112, 83, 0.1);
+      padding-bottom: 15px;
+      margin-top: 5px;
+      font-size: 1.9em;
+      position: relative;
+      font-weight: 600;
+      display: inline-block;
+    }
+    h2::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -2px;
+      width: 60px;
+      height: 2px;
+    }
+    .module.spring h2::after { background-color: var(--color-season-spring); }
+    .module.summer h2::after { background-color: var(--color-season-summer); }
+    .module.autumn h2::after { background-color: var(--color-season-autumn); }
+    .module.winter h2::after { background-color: var(--color-season-winter); }
+    .module.interactive h2::after { 
+      background: linear-gradient(90deg, 
+        var(--color-season-spring), 
+        var(--color-season-summer),
+        var(--color-season-autumn),
+        var(--color-season-winter)); 
+    }
+
+    /* 节气轮盘 - 更具艺术感的按钮设计 */
+    .season-wheel {
+      display: flex;
+      justify-content: center;
+      margin: 35px 0;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .wheel-btn {
+      background: var(--color-card);
+      color: var(--color-text);
+      border: 2px solid var(--color-secondary);
+      border-radius: 50%;
+      width: 90px;
+      height: 90px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: var(--transition-standard);
+      position: relative;
+      overflow: hidden;
+      font-family: "Noto Serif SC", serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-light);
+    }
+    .wheel-btn:hover {
+      transform: scale(1.1) rotate(5deg);
+      box-shadow: 0 6px 18px rgba(140, 112, 83, 0.2);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+    .wheel-btn.active {
+      background: var(--color-primary);
+      color: white;
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(140, 112, 83, 0.25);
+      border-color: var(--color-primary);
+    }
+    .wheel-btn::after {
+      content: attr(data-poem);
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: max-content;
+      max-width: 150px;
+      padding: 9px 14px;
+      background: rgba(58, 50, 38, 0.9);
+      color: white;
+      font-size: 0.8em;
+      border-radius: 8px;
+      opacity: 0;
+      transition: var(--transition-standard);
+      pointer-events: none;
+      z-index: 10;
+      text-align: center;
+      font-style: italic;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    }
+    .wheel-btn:hover::after {
+      opacity: 1;
+      top: -110%;
+    }
+
+    /* 图表容器 - 增强边框和阴影效果 */
+    .chart-container {
+      width: 100%;
+      height: 450px;
+      margin: 25px 0;
+      border: 1px solid rgba(140, 112, 83, 0.1);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: var(--shadow-light);
+      padding: 20px;
+      box-sizing: border-box;
+      position: relative;
+      transition: var(--transition-standard);
+    }
+    .chart-container:hover {
+      box-shadow: var(--shadow-medium);
+    }
+    .chart-container::before {
+      content: "";
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 35px;
+      height: 35px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      opacity: 0.08;
+      z-index: 0;
+    }
+    .temp-chart::before {
+      background-image: url("https://img.icons8.com/fluency/96/000000/thermometer.png");
+    }
+    .pheno-chart::before {
+      background-image: url("https://img.icons8.com/fluency/96/000000/eco-energy.png");
+    }
+
+    /* 故事卡片 - 增强艺术感 */
+    .stories {
+      display: flex;
+      overflow-x: auto;
+      gap: 30px;
+      padding: 25px 0 35px;
+      scroll-behavior: smooth;
+      scrollbar-width: thin;
+      scrollbar-color: var(--color-secondary) transparent;
+    }
+    .stories::-webkit-scrollbar {
+      height: 6px;
+    }
+    .stories::-webkit-scrollbar-thumb {
+      background-color: var(--color-secondary);
+      border-radius: 3px;
+    }
+    .story-card {
+      min-width: 320px;
+      background: var(--color-card);
+      border-radius: 12px;
+      box-shadow: var(--shadow-light);
+      overflow: hidden;
+      transition: var(--transition-standard);
+      border: 1px solid rgba(140, 112, 83, 0.08);
+      position: relative;
+    }
+    .story-card:hover {
+      transform: translateY(-12px) rotate(1deg);
+      box-shadow: var(--shadow-strong);
+    }
+    .story-header {
+      padding: 18px 20px;
+      background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+      color: white;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      position: relative;
+      overflow: hidden;
+    }
+    .story-header::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 60px;
+      height: 60px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50% 0 0 0;
+    }
+    .story-icon {
+      width: 28px;
+      height: 28px;
+      opacity: 0.95;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: brightness(1.1);
+    }
+    .story-card:hover .story-icon {
+      transform: rotate(20deg) scale(1.1);
+    }
+    .story-body {
+      padding: 22px;
+      line-height: 1.8;
+      position: relative;
+    }
+    .story-body::first-letter {
+      font-size: 2em;
+      color: var(--color-primary);
+      font-family: Georgia, serif;
+      float: left;
+      line-height: 0.8;
+      margin-right: 6px;
+    }
+    .story-data {
+      font-weight: bold;
+      color: var(--color-primary);
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed rgba(140, 112, 83, 0.15);
+      font-size: 1.05em;
+    }
+
+    /* 诗意结尾 */
+    .poetic-end {
+      max-width: 900px;
+      margin: 60px auto 40px;
+      padding: 35px 45px;
+      background: rgba(255,255,255,0.92);
+      border-radius: 12px;
+      line-height: 2;
+      font-size: 1.2em;
+      text-align: center;
+      box-shadow: var(--shadow-light);
+      font-family: "Noto Serif SC", serif;
+      position: relative;
+      border: 1px solid rgba(140, 112, 83, 0.08);
+    }
+    .poetic-end::after {
+      content: """;
+      position: absolute;
+      bottom: -25px;
+      right: 35px;
+      font-size: 6em;
+      color: rgba(140, 112, 83, 0.08);
+      font-family: Georgia, serif;
+      line-height: 1;
+    }
+
+    /* 页脚 */
+    .footer {
+      text-align: center;
+      padding: 40px 25px;
+      color: var(--color-text-light);
+      font-size: 0.95em;
+      background: rgba(0,0,0,0.02);
+      border-top: 1px solid rgba(140, 112, 83, 0.1);
+      margin-top: 50px;
+      position: relative;
+    }
+    .footer::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+    }
+    .footer p {
+      margin: 8px 0;
+    }
+
+    /* 互动元素样式 */
+    
+    /* 节气倒计时 */
+    .countdown-container {
+      text-align: center;
+      padding: 20px;
+      background: rgba(255,255,255,0.5);
+      border-radius: 10px;
+      margin: 20px 0;
+      border: 1px solid rgba(140, 112, 83, 0.1);
+      box-shadow: var(--shadow-light);
+    }
+    .countdown-title {
+      font-size: 1.2em;
+      color: var(--color-primary);
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+    .countdown-boxes {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .countdown-box {
+      background: var(--color-card);
+      padding: 15px 10px;
+      border-radius: 8px;
+      min-width: 80px;
+      box-shadow: var(--shadow-light);
+      border: 1px solid rgba(140, 112, 83, 0.1);
+      transition: var(--transition-standard);
+    }
+    .countdown-box:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-medium);
+    }
+    .countdown-number {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: var(--color-text);
+      margin: 0;
+    }
+    .countdown-label {
+      font-size: 0.8em;
+      color: var(--color-text-light);
+      margin: 5px 0 0 0;
+    }
+
+    /* 节气知识测验 */
+    .quiz-container {
+      margin: 30px 0;
+      padding: 25px;
+      background: rgba(255,255,255,0.7);
+      border-radius: 10px;
+      border: 1px solid rgba(140, 112, 83, 0.1);
+      box-shadow: var(--shadow-light);
+    }
+    .quiz-question {
+      font-size: 1.1em;
+      margin-bottom: 15px;
+      color: var(--color-text);
+      font-weight: 500;
+    }
+    .quiz-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 768px) {
+      .quiz-options {
+        grid-template-columns: 1fr;
+      }
+    }
+    .quiz-option {
+      background: var(--color-card);
+      border: 1px solid rgba(140, 112, 83, 0.2);
+      border-radius: 6px;
+      padding: 12px 15px;
+      cursor: pointer;
+      transition: var(--transition-standard);
+      text-align: left;
+      font-family: inherit;
+      font-size: 1em;
+      color: var(--color-text);
+    }
+    .quiz-option:hover {
+      background: rgba(140, 112, 83, 0.05);
+      border-color: var(--color-secondary);
+    }
+    .quiz-option.correct {
+      background: rgba(125, 157, 106, 0.2);
+      border-color: var(--color-season-spring);
+      color: var(--color-season-spring);
+      font-weight: bold;
+    }
+    .quiz-option.incorrect {
+      background: rgba(194, 112, 61, 0.1);
+      border-color: var(--color-season-autumn);
+      color: var(--color-season-autumn);
+    }
+    .quiz-feedback {
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 15px;
+      display: none;
+    }
+    .quiz-feedback.correct {
+      background: rgba(125, 157, 106, 0.1);
+      border: 1px solid var(--color-season-spring);
+      color: var(--color-season-spring);
+      display: block;
+    }
+    .quiz-feedback.incorrect {
+      background: rgba(194, 112, 61, 0.1);
+      border: 1px solid var(--color-season-autumn);
+      color: var(--color-season-autumn);
+      display: block;
+    }
+    .quiz-next {
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 20px;
+      font-family: inherit;
+      font-size: 1em;
+      cursor: pointer;
+      transition: var(--transition-standard);
+      margin-top: 10px;
+      display: none;
+    }
+    .quiz-next.show {
+      display: inline-block;
+    }
+    .quiz-next:hover {
+      background: var(--color-secondary);
+      transform: translateY(-2px);
+    }
+
+    /* 节气习俗翻牌卡 */
+    .custom-card-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+      margin: 30px 0;
+    }
+    .custom-card {
+      height: 250px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+    .custom-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+      box-shadow: var(--shadow-light);
+      border-radius: 10px;
+    }
+    .custom-card.flipped .custom-card-inner {
+      transform: rotateY(180deg);
+    }
+    .custom-card-front, .custom-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .custom-card-front {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      color: white;
+      font-weight: bold;
+      font-size: 1.3em;
+    }
+    .custom-card-back {
+      background: var(--color-card);
+      color: var(--color-text);
+      transform: rotateY(180deg);
+      line-height: 1.6;
+      text-align: center;
+      border: 1px solid rgba(140, 112, 83, 0.1);
+    }
+    .custom-icon {
+      font-size: 2.5em;
+      margin-bottom: 15px;
+      opacity: 0.9;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+      h1 { font-size: 2.3em; letter-spacing: 6px; }
+      h2 { font-size: 1.6em; }
+      .chart-container { height: 350px; }
+      .intro, .poetic-end { 
+        font-size: 1.05em; 
+        padding: 25px;
+        margin: 25px 15px;
+      }
+      .wheel-btn { 
+        width: 80px; 
+        height: 80px; 
+        font-size: 0.9em; 
+      }
+      .module {
+        padding: 25px;
+        margin: 50px 15px;
+      }
+      .story-card {
+        min-width: calc(100% - 30px);
+        margin: 0 15px;
+      }
+      .solar-timeline {
+        margin: 20px 15px 50px;
+      }
+      .timeline-label {
+        font-size: 0.75em;
+      }
+      .countdown-box {
+        min-width: 60px;
+        padding: 10px 5px;
+      }
+      .countdown-number {
+        font-size: 1.5em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="gradient-bg">
+    <h1>数据解码二十四节气</h1>
+    <div class="subtitle">时光里的中国智慧</div>
+  </header>
+
+  <!-- 节气时间轴 -->
+  <div class="solar-timeline">
+    <div class="timeline-marker" style="left: 0%" data-term="立春">
+      <div class="timeline-label">立春</div>
+    </div>
+    <div class="timeline-marker" style="left: 8.33%" data-term="雨水">
+      <div class="timeline-label">雨水</div>
+    </div>
+    <div class="timeline-marker" style="left: 16.66%" data-term="惊蛰">
+      <div class="timeline-label">惊蛰</div>
+    </div>
+    <div class="timeline-marker" style="left: 25%" data-term="春分">
+      <div class="timeline-label">春分</div>
+    </div>
+    <div class="timeline-marker" style="left: 33.33%" data-term="清明">
+      <div class="timeline-label">清明</div>
+    </div>
+    <div class="timeline-marker" style="left: 41.66%" data-term="谷雨">
+      <div class="timeline-label">谷雨</div>
+    </div>
+    <div class="timeline-marker" style="left: 50%" data-term="立夏">
+      <div class="timeline-label">立夏</div>
+    </div>
+    <div class="timeline-marker" style="left: 58.33%" data-term="小满">
+      <div class="timeline-label">小满</div>
+    </div>
+    <div class="timeline-marker" style="left: 66.66%" data-term="芒种">
+      <div class="timeline-label">芒种</div>
+    </div>
+    <div class="timeline-marker" style="left: 75%" data-term="夏至">
+      <div class="timeline-label">夏至</div>
+    </div>
+    <div class="timeline-marker" style="left: 83.33%" data-term="小暑">
+      <div class="timeline-label">小暑</div>
+    </div>
+    <div class="timeline-marker" style="left: 91.66%" data-term="大暑">
+      <div class="timeline-label">大暑</div>
+    </div>
+    <div class="timeline-marker" style="left: 100%" data-term="立秋">
+      <div class="timeline-label">立秋</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="intro">
+    "春耕夏耘，秋收冬藏，二十四节气是祖先留给我们的时间密码。<br>
+    两千年前，古人仰望星空，俯察大地，在黄河流域凝练出这套精妙的自然历法。<br>
+    今天，让我们用现代数据的棱镜，重新解读这份跨越千年的智慧，<br>
+    看看在气候变化的今天，这些古老的节律如何在我们身边悄然演变..."
+  </div>
+
+  <!-- 互动模块：节气倒计时 -->
+  <section class="module interactive">
+    <h2>节气倒计时 · 等待下一个时令的到来</h2>
+    <div class="countdown-container">
+      <div class="countdown-title">距离 <span id="next-term-name">立夏</span> 还有：</div>
+      <div class="countdown-boxes">
+        <div class="countdown-box">
+          <p class="countdown-number" id="countdown-days">0</p>
+          <p class="countdown-label">天</p>
+        </div>
+        <div class="countdown-box">
+          <p class="countdown-number" id="countdown-hours">0</p>
+          <p class="countdown-label">时</p>
+        </div>
+        <div class="countdown-box">
+          <p class="countdown-number" id="countdown-minutes">0</p>
+          <p class="countdown-label">分</p>
+        </div>
+        <div class="countdown-box">
+          <p class="countdown-number" id="countdown-seconds">0</p>
+          <p class="countdown-label">秒</p>
+        </div>
+      </div>
+    </div>
+    <div class="story-body">
+      <p>古人观天象、察物候，将一年分为二十四节气，每个节气都标志着自然节律的变化。现在，让我们一起等待下一个节气的到来，感受时间的流转。</p>
+    </div>
+  </section>
+
+  <!-- 模块一：南北气候对话 · 四立节气温度图谱 -->
+  <section class="module spring">
+    <div class="season-decoration spring-decoration" style="top: 20px; right: 20px;"></div>
+    <h2>南北气候对话 · 四立节气温度图谱</h2>
+    <div class="season-wheel">
+      <button class="wheel-btn active" data-season="lichun" data-poem="东风带雨逐西风，大地阳和暖气生">立春</button>
+      <button class="wheel-btn" data-season="lixia" data-poem="天地始交，万物并秀">立夏</button>
+      <button class="wheel-btn" data-season="liqiu" data-poem="凉风至，白露生，寒蝉鸣">立秋</button>
+      <button class="wheel-btn" data-season="lidong" data-poem="水始冰，地始冻">立冬</button>
+    </div>
+    <div id="tempChart" class="chart-container temp-chart"></div>
+    <div id="tempStory" class="story-body">
+      <p class="story-data">立春：深圳22℃，北京-6℃，南北温差近30℃</p>
+      <p>春天的脚步，从南到北要走整整两个月。东风带雨，大地阳和，暖气初生，不同地域的人们在同一天感受着截然不同的季节。</p>
+    </div>
+  </section>
+
+  <!-- 模块二：自然物候密码 · 节气生物钟 -->
+  <section class="module summer">
+    <div class="season-decoration summer-decoration" style="top: 20px; right: 20px;"></div>
+    <h2>自然物候密码 · 节气生物钟</h2>
+    <div class="season-wheel">
+      <button class="wheel-btn active" data-pheno="liuya" data-title="柳树发芽率">柳树发芽</button>
+      <button class="wheel-btn" data-pheno="chanming" data-title="蝉鸣频率">蝉鸣</button>
+      <button class="wheel-btn" data-pheno="guihua" data-title="桂花开花率">桂花</button>
+      <button class="wheel-btn" data-pheno="chuxue" data-title="初雪概率">初雪</button>
+    </div>
+    <div id="phenologyChart" class="chart-container pheno-chart"></div>
+    <div id="phenoStory" class="story-body">
+      <p class="story-data">柳树发芽率（2019-2024）稳步提升</p>
+      <p>柳条是最敏感的春之信使。"不知细叶谁裁出，二月春风似剪刀"，这句古诗在今天依然贴切，只是春风似乎来得一年比一年早了。</p>
+    </div>
+  </section>
+
+  <!-- 互动模块：节气习俗翻牌卡 -->
+  <section class="module interactive">
+    <h2>节气习俗知多少 · 翻转卡片探索传统</h2>
+    <p>每个节气都有其独特的习俗和文化内涵，点击卡片翻转查看详情：</p>
+    <div class="custom-card-container">
+      <div class="custom-card">
+        <div class="custom-card-inner">
+          <div class="custom-card-front">
+            <i class="fas fa-seedling custom-icon"></i>
+            <div>立春</div>
+          </div>
+          <div class="custom-card-back">
+            <div>迎春、打春、咬春</div>
+            <p>民间有"咬春"的习俗，吃春饼、春卷，寓意迎接春天的到来。</p>
+          </div>
+        </div>
+      </div>
+      <div class="custom-card">
+        <div class="custom-card-inner">
+          <div class="custom-card-front">
+            <i class="fas fa-umbrella custom-icon"></i>
+            <div>雨水</div>
+          </div>
+          <div class="custom-card-back">
+            <div>拉保保、回娘屋</div>
+            <p>雨水时节，出嫁的女儿要回娘家探望父母，给母亲送一段红绸和一罐炖肉。</p>
+          </div>
+        </div>
+      </div>
+      <div class="custom-card">
+        <div class="custom-card-inner">
+          <div class="custom-card-front">
+            <i class="fas fa-bolt custom-icon"></i>
+            <div>惊蛰</div>
+          </div>
+          <div class="custom-card-back">
+            <div>祭白虎、打小人</div>
+            <p>惊蛰象征着春雷惊醒蛰伏的昆虫，民间有驱虫、打小人的习俗。</p>
+          </div>
+        </div>
+      </div>
+      <div class="custom-card">
+        <div class="custom-card-inner">
+          <div class="custom-card-front">
+            <i class="fas fa-balance-scale custom-icon"></i>
+            <div>春分</div>
+          </div>
+          <div class="custom-card-back">
+            <div>立蛋、踏青</div>
+            <p>"春分到，蛋儿俏"，春分日人们会尝试立蛋，据说这天鸡蛋更容易竖立。</p>
+          </div>
+        </div>
+      </div>
+      <div class="custom-card">
+        <div class="custom-card-inner">
+          <div class="custom-card-front">
+            <i class="fas fa-wreath custom-icon"></i>
+            <div>清明</div>
+          </div>
+          <div class="custom-card-back">
+            <div>扫墓、踏青、插柳</div>
+            <p>清明既是节气也是节日，人们祭祖扫墓，同时也踏青赏春，享受春光。</p>
+          </div>
+        </div>
+      </div>
+      <div class="custom-card">
+        <div class="custom-card-inner">
+          <div class="custom-card-front">
+            <i class="fas fa-seedling custom-icon"></i>
+            <div>谷雨</div>
+          </div>
+          <div class="custom-card-back">
+            <div>祭仓颉、喝谷雨茶</div>
+            <p>谷雨是采茶的好时节，民间有喝谷雨茶的习俗，据说能清火、明目。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 模块三：数字里的节气人生 -->
+  <section class="module autumn">
+    <div class="season-decoration autumn-decoration" style="top: 20px; right: 20px;"></div>
+    <h2>数字里的节气人生 · 温暖数据故事</h2>
+    <div class="stories">
+      <div class="story-card">
+        <div class="story-header">
+          <img class="story-icon" src="https://img.icons8.com/fluency/96/000000/sun.png" alt="阳光">
+          <div>立春的阳光</div>
+        </div>
+        <div class="story-body">
+          <p class="story-data">北京立春日照时长增加1.2小时</p>
+          <p>76岁的王奶奶每天能多晒一小时太阳，正好教小孙女剪春字、做春饼。数据背后，是祖孙两代人的温暖时光。</p>
+        </div>
+      </div>
+      <div class="story-card">
+        <div class="story-header">
+          <img class="story-icon" src="https://img.icons8.com/fluency/96/000000/lotus.png" alt="荷花">
+          <div>立夏的蝉鸣</div>
+        </div>
+        <div class="story-body">
+          <p class="story-data">蝉鸣提前5天出现</p>
+          <p>上海弄堂的李老师发现，蝉鸣已成为夏天提前到来的信号。虽然自然节奏在变，但生活依旧美好。</p>
+        </div>
+      </div>
+      <div class="story-card">
+        <div class="story-header">
+          <img class="story-icon" src="https://img.icons8.com/fluency/96/000000/apple.png" alt="苹果">
+          <div>立秋的温差</div>
+        </div>
+        <div class="story-body">
+          <p class="story-data">乌鲁木齐昼夜温差达15℃</p>
+          <p>"早穿棉袄午穿纱"不仅是宣传语，更是艾尼瓦尔大叔生活的真实写照，也是他向朋友讲述家乡的最佳素材。</p>
+        </div>
+      </div>
+      <div class="story-card">
+        <div class="story-header">
+          <img class="story-icon" src="https://img.icons8.com/fluency/96/000000/snow.png" alt="初雪">
+          <div>立冬的雪线</div>
+        </div>
+        <div class="story-body">
+          <p class="story-data">成都初雪推迟12天</p>
+          <p>摄影师小林需要更长时间等待"窗含西岭千秋雪"的美景，但当雪花飘落时，整座城市的欢呼声更加热烈。</p>
+        </div>
+      </div>
+      <div class="story-card">
+        <div class="story-header">
+          <img class="story-icon" src="https://img.icons8.com/fluency/96/000000/rain.png" alt="清明雨">
+          <div>清明的雨</div>
+        </div>
+        <div class="story-body">
+          <p class="story-data">江南清明雨量减少15%</p>
+          <p>杭州茶农张师傅需要更精准地把握采摘时间。虽然"清明时节雨纷纷"的景象减少，但龙井茶的香气依旧如约而至。</p>
+        </div>
+      </div>
+      <div class="story-card">
+        <div class="story-header">
+          <img class="story-icon" src="https://img.icons8.com/fluency/96/000000/thermometer.png" alt="大寒">
+          <div>大寒的暖意</div>
+        </div>
+        <div class="story-body">
+          <p class="story-data">东北大寒平均温度上升3℃</p>
+          <p>哈尔滨的冰雕师傅需要创新工艺应对稍暖的冬天，但冰雪艺术依然绽放光彩，成为城市冬日的骄傲。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 互动模块：节气知识小测验 -->
+  <section class="module interactive">
+    <h2>节气知识小测验 · 挑战你的传统文化认知</h2>
+    <div class="quiz-container">
+      <div class="quiz-question" id="quiz-question">二十四节气中，哪个节气表示昼夜平分？</div>
+      <div class="quiz-options" id="quiz-options">
+        <button class="quiz-option" data-correct="false">立春</button>
+        <button class="quiz-option" data-correct="true">春分</button>
+        <button class="quiz-option" data-correct="false">夏至</button>
+        <button class="quiz-option" data-correct="false">冬至</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-feedback"></div>
+      <button class="quiz-next" id="quiz-next">下一题</button>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <div class="poetic-end">
+    "数据是冰冷的数字，但节气是温暖的生活。<br>
+    在数据与人文的交汇处，我们看见：<br>
+    变的是具体数字，不变的是四季轮回；<br>
+    变的是气候模式，不变的是对自然的敬畏；<br>
+    变的是生活方式，不变的是那份深植于时间深处的——中国智慧与人文情怀。"
+  </div>
+
+  <div class="footer">
+    <p>数据来源：中国气象局历史气象数据库、中国物候观测网络、各城市气象站公开数据</p>
+    <p>传统文化顾问：中华节气文化研究会</p>
+    <p>© 2024 数据解码二十四节气 · 用现代视角解读传统智慧</p>
+  </div>
+
+  <script>
+    // 初始化图表
+    const tempChart = echarts.init(document.getElementById('tempChart'));
+    const phenologyChart = echarts.init(document.getElementById('phenologyChart'));
+
+    // 温度数据
+    const tempData = {
+      lichun: {
+        cities: ['哈尔滨', '北京', '上海', '广州', '深圳', '昆明'],
+        temps: [-15, -2.3, 8.7, 15.6, 22.1, 12.4]
+      },
+      lixia: {
+        cities: ['哈尔滨', '北京', '上海', '广州', '深圳', '昆明'],
+        temps: [17.2, 24.1, 26.8, 28.7, 27.9, 20.3]
+      },
+      liqiu: {
+        cities: ['哈尔滨', '北京', '上海', '广州', '深圳', '昆明'],
+        temps: [20.5, 25.7, 28.4, 30.2, 33.1, 22.9]
+      },
+      lidong: {
+        cities: ['哈尔滨', '北京', '上海', '广州', '深圳', '昆明'],
+        temps: [-2.1, 4.3, 14.5, 21.8, 27.3, 15.9]
+      }
+    };
+
+    // 温度故事
+    const tempStories = {
+      lichun: `
+        <p class="story-data">立春：深圳22℃，北京-6℃，南北温差近30℃</p>
+        <p>春天的脚步，从南到北要走整整两个月。东风带雨，大地阳和，暖气初生，不同地域的人们在同一天感受着截然不同的季节。</p>
+      `,
+      lixia: `
+        <p class="story-data">立夏：北京24℃，深圳27℃，全国进入生长季</p>
+        <p>"天地始交，万物并秀"，立夏时节，全国大部分地区真正进入生长季节，这是四季轮回中最富生命力的时刻。</p>
+      `,
+      liqiu: `
+        <p class="story-data">立秋：北京32℃，深圳33℃，秋意悄然酝酿</p>
+        <p>立秋虽名"秋"，实为盛夏。但细心观察数据会发现，北方昼夜温差开始拉大，秋意正在悄悄酝酿。</p>
+      `,
+      lidong: `
+        <p class="story-data">立冬：深圳27℃，北京4℃，南北对比鲜明</p>
+        <p>"水始冰，地始冻"的北方与"小阳春"的南方形成鲜明对比。立冬时节，中国幅员辽阔的地理特征展现得淋漓尽致。</p>
+      `
+    };
+
+    // 物候数据
+    const phenologyData = {
+      liuya: { years: [2019,2020,2021,2022,2023,2024], values: [65,72,68,75,70,78] },
+      chanming: { years: [2019,2020,2021,2022,2023,2024], values: [45,50,55,48,58,62] },
+      guihua: { years: [2019,2020,2021,2022,2023,2024], values: [30,35,40,38,45,42] },
+      chuxue: { years: [2019,2020,2021,2022,2023,2024], values: [20,18,25,22,30,28] }
+    };
+
+    // 物候故事
+    const phenoStories = {
+      liuya: `
+        <p class="story-data">柳树发芽率（2019-2024）稳步提升</p>
+        <p>柳条是最敏感的春之信使。"不知细叶谁裁出，二月春风似剪刀"，这句古诗在今天依然贴切，只是春风似乎来得一年比一年早了。</p>
+      `,
+      chanming: `
+        <p class="story-data">蝉鸣出现频率逐年提前</p>
+        <p>蝉鸣是夏天的声音标识。数据表明蝉鸣出现时间逐年提前，"垂緌饮清露，流响出疏桐"的意境在现代城市中有了新的时间表。</p>
+      `,
+      guihua: `
+        <p class="story-data">桂花开花率呈现波动上升</p>
+        <p>金秋桂香的时间窗口正在发生变化。虽然传统中秋赏桂的时间可能需要调整，但"桂子月中落，天香云外飘"的诗意永恒。</p>
+      `,
+      chuxue: `
+        <p class="story-data">初雪出现概率整体推迟</p>
+        <p>初雪的姗姗来迟，让"晚来天欲雪，能饮一杯无"的邀约需要更多耐心。数据背后，是冬季模式的整体推迟。</p>
+      `
+    };
+
+    // 季节色彩映射
+    const seasonColors = {
+      lichun: ['#7d9d6a', '#8dbf7a', '#a0cf8b', '#b2df9c', '#c4efad', '#d6f5be'],
+      lixia: ['#d4a06a', '#e0b07a', '#eaae6f', '#f2b97a', '#f9c386', '#f9d09c'],
+      liqiu: ['#c2703d', '#d1804d', '#de905d', '#e9a06d', '#f2b07d', '#f9c08d'],
+      lidong: ['#6b8e9e', '#7b9eae', '#8baebe', '#9cbecd', '#accfdd', '#bddfea']
+    };
+
+    // 物候色彩映射
+    const phenoColors = {
+      liuya: ['#7d9d6a', '#87a872', '#91b37a', '#9bc082', '#a5cc8a', '#afd892'],
+      chanming: ['#d4a06a', '#d9ac75', '#dea880', '#e3b48b', '#e8c096', '#edcc9f'],
+      guihua: ['#c2703d', '#ca7e4c', '#d28c5b', '#da9a6a', '#e1a779', '#e9b588'],
+      chuxue: ['#6b8e9e', '#7a9ebd', '#89afcb', '#98c0d9', '#a7d1e7', '#b6e2f5']
+    };
+
+    // 切换节气气温图
+    function switchSeason(season) {
+      document.querySelectorAll('.wheel-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.season === season) btn.classList.add('active');
+      });
+
+      const data = tempData[season];
+      tempChart.setOption({
+        tooltip: { 
+          trigger: 'axis',
+          backgroundColor: 'rgba(255,255,255,0.9)',
+          borderColor: 'rgba(140, 112, 83, 0.2)',
+          borderWidth: 1,
+          textStyle: { color: '#3a3226' },
+          formatter: '{b}: {c}℃',
+          // 添加互动效果
+          enterable: true,
+          extraCssText: 'box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 6px;'
+        },
+        xAxis: { 
+          type: 'category', 
+          data: data.cities,
+          axisLine: { lineStyle: { color: 'rgba(140, 112, 83, 0.2)' } },
+          axisLabel: { color: '#5c4b36' }
+        },
+        yAxis: { 
+          type: 'value', 
+          name: '平均气温(℃)',
+          nameTextStyle: { color: '#5c4b36' },
+          axisLine: { lineStyle: { color: 'rgba(140, 112, 83, 0.2)' } },
+          axisLabel: { color: '#5c4b36' },
+          splitLine: { lineStyle: { color: 'rgba(140, 112, 83, 0.1)' } }
+        },
+        series: [{ 
+          data: data.temps, 
+          type: 'bar', 
+          itemStyle: { 
+            color: function(params) {
+              return seasonColors[season][params.dataIndex];
+            },
+            borderRadius: [4, 4, 0, 0]
+          },
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 15,
+              shadowColor: 'rgba(140, 112, 83, 0.3)'
+            }
+          },
+          // 添加动画效果
+          animationDuration: 800,
+          animationEasing: 'cubicOut',
+          // 鼠标悬停时的放大效果
+          select: {
+            itemStyle: {
+              color: '#8c7053',
+              shadowBlur: 20,
+              shadowColor: 'rgba(140, 112, 83, 0.5)'
+            }
+          }
+        }]
+      });
+
+      document.getElementById('tempStory').innerHTML = tempStories[season];
+    }
+
+    // 切换物候图
+    function switchPhenology(type) {
+      document.querySelectorAll('.wheel-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.pheno === type) btn.classList.add('active');
+      });
+
+      const data = phenologyData[type];
+      const title = document.querySelector(`[data-pheno="${type}"]`).dataset.title;
+      
+      phenologyChart.setOption({
+        tooltip: { 
+          trigger: 'axis',
+          backgroundColor: 'rgba(255,255,255,0.9)',
+          borderColor: 'rgba(140, 112, 83, 0.2)',
+          borderWidth: 1,
+          textStyle: { color: '#3a3226' },
+          extraCssText: 'box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 6px;'
+        },
+        xAxis: { 
+          type: 'category', 
+          data: data.years,
+          axisLine: { lineStyle: { color: 'rgba(140, 112, 83, 0.2)' } },
+          axisLabel: { color: '#5c4b36' }
+        },
+        yAxis: { 
+          type: 'value', 
+          name: title.includes('率') ? '百分比(%)' : 
+                                          title.includes('频率') ? '次/日' : '概率(%)',
+          nameTextStyle: { color: '#5c4b36' },
+          axisLine: { lineStyle: { color: 'rgba(140, 112, 83, 0.2)' } },
+          axisLabel: { color: '#5c4b36' },
+          splitLine: { lineStyle: { color: 'rgba(140, 112, 83, 0.1)' } }
+        },
+        series: [{ 
+          data: data.values, 
+          type: 'bar', 
+          itemStyle: { 
+            color: function(params) {
+              return phenoColors[type][params.dataIndex];
+            },
+            borderRadius: [4, 4, 0, 0]
+          },
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 15,
+              shadowColor: 'rgba(140, 112, 83, 0.3)'
+            }
+          },
+          animationDuration: 800,
+          animationEasing: 'cubicOut'
+        }]
+      });
+
+      document.getElementById('phenoStory').innerHTML = phenoStories[type];
+    }
+
+    // 节气日期数据（2024年）
+    const solarTerms = [
+      { name: "立春", date: "2024-02-04T10:42:00" },
+      { name: "雨水", date: "2024-02-19T06:24:00" },
+      { name: "惊蛰", date: "2024-03-05T04:29:00" },
+      { name: "春分", date: "2024-03-20T05:24:00" },
+      { name: "清明", date: "2024-04-04T09:12:00" },
+      { name: "谷雨", date: "2024-04-19T16:13:00" },
+      { name: "立夏", date: "2024-05-05T02:15:00" },
+      { name: "小满", date: "2024-05-20T15:08:00" },
+      { name: "芒种", date: "2024-06-05T06:18:00" },
+      { name: "夏至", date: "2024-06-21T22:57:00" },
+      { name: "小暑", date: "2024-07-07T16:25:00" },
+      { name: "大暑", date: "2024-07-23T09:50:00" },
+      { name: "立秋", date: "2024-08-07T22:16:00" },
+      { name: "处暑", date: "2024-08-23T12:52:00" },
+      { name: "白露", date: "2024-09-07T01:01:00" },
+      { name: "秋分", date: "2024-09-22T10:30:00" },
+      { name: "寒露", date: "2024-10-08T06:59:00" },
+      { name: "霜降", date: "2024-10-23T10:11:00" },
+      { name: "立冬", date: "2024-11-07T10:38:00" },
+      { name: "小雪", date: "2024-11-22T08:05:00" },
+      { name: "大雪", date: "2024-12-07T03:04:00" },
+      { name: "冬至", date: "2024-12-21T21:20:00" },
+      { name: "小寒", date: "2025-01-05T14:30:00" },
+      { name: "大寒", date: "2025-01-20T07:40:00" }
+    ];
+
+    // 更新节气倒计时
+    function updateCountdown() {
+      const now = new Date();
+      let nextTerm = null;
+      
+      // 找到下一个节气
+      for (let term of solarTerms) {
+        const termDate = new Date(term.date);
+        if (termDate > now) {
+          nextTerm = term;
+          break;
+        }
+      }
+      
+      // 如果今年的节气都过了，取明年的第一个
+      if (!nextTerm) {
+        nextTerm = solarTerms[0];
+        // 年份加1
+        const nextYear = now.getFullYear() + 1;
+        nextTerm.date = nextTerm.date.replace(/^\d+/, nextYear);
+      }
+      
+      // 计算倒计时
+      const termDate = new Date(nextTerm.date);
+      const diff = termDate - now;
+      
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      // 更新DOM
+      document.getElementById('next-term-name').textContent = nextTerm.name;
+      document.getElementById('countdown-days').textContent = days;
+      document.getElementById('countdown-hours').textContent = hours.toString().padStart(2, '0');
+      document.getElementById('countdown-minutes').textContent = minutes.toString().padStart(2, '0');
+      document.getElementById('countdown-seconds').textContent = seconds.toString().padStart(2, '0');
+    }
+
+    // 测验题目数据
+    const quizQuestions = [
+      {
+        question: "二十四节气中，哪个节气表示昼夜平分？",
+        options: ["立春", "春分", "夏至", "冬至"],
+        correct: 1
+      },
+      {
+        question: "以下哪个节气标志着夏季的开始？",
+        options: ["清明", "立夏", "芒种", "夏至"],
+        correct: 1
+      },
+      {
+        question: "“清明时节雨纷纷”描述的是哪个节气？",
+        options: ["雨水", "惊蛰", "清明", "谷雨"],
+        correct: 2
+      },
+      {
+        question: "二十四节气中，哪个节气白天最长？",
+        options: ["春分", "夏至", "秋分", "冬至"],
+        correct: 1
+      },
+      {
+        question: "“吃饺子”是哪个节气的习俗？",
+        options: ["冬至", "小寒", "大寒", "立春"],
+        correct: 0
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+
+    // 更新测验题目
+    function updateQuizQuestion(index) {
+      const question = quizQuestions[index];
+      document.getElementById('quiz-question').textContent = question.question;
+      
+      const optionsContainer = document.getElementById('quiz-options');
+      optionsContainer.innerHTML = '';
+      
+      question.options.forEach((option, i) => {
+        const button = document.createElement('button');
+        button.className = 'quiz-option';
+        button.textContent = option;
+        button.dataset.correct = i === question.correct;
+        button.addEventListener('click', checkQuizAnswer);
+        optionsContainer.appendChild(button);
+      });
+      
+      document.getElementById('quiz-feedback').style.display = 'none';
+      document.getElementById('quiz-next').classList.remove('show');
+    }
+
+    // 检查测验答案
+    function checkQuizAnswer(e) {
+      const selectedOption = e.target;
+      const isCorrect = selectedOption.dataset.correct === 'true';
+      
+      // 禁用所有选项
+      document.querySelectorAll('.quiz-option').forEach(option => {
+        option.disabled = true;
+        if (option.dataset.correct === 'true') {
+          option.classList.add('correct');
+        } else if (option === selectedOption) {
+          option.classList.add('incorrect');
+        }
+      });
+      
+      // 显示反馈
+      const feedbackElement = document.getElementById('quiz-feedback');
+      feedbackElement.className = 'quiz-feedback';
+      
+      if (isCorrect) {
+        feedbackElement.classList.add('correct');
+        feedbackElement.textContent = '正确！太棒了，你对节气文化很了解。';
+      } else {
+        feedbackElement.classList.add('incorrect');
+        const correctAnswer = document.querySelector('.quiz-option.correct').textContent;
+        feedbackElement.textContent = `答错了。正确答案是：${correctAnswer}。`;
+      }
+      
+      feedbackElement.style.display = 'block';
+      
+      // 显示下一题按钮
+      document.getElementById('quiz-next').classList.add('show');
+    }
+
+    // 下一题
+    function nextQuizQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex >= quizQuestions.length) {
+        currentQuestionIndex = 0;
+      }
+      updateQuizQuestion(currentQuestionIndex);
+    }
+
+    // 时间轴标记点击事件
+    document.querySelectorAll('.timeline-marker').forEach(marker => {
+      marker.addEventListener('click', () => {
+        const term = marker.dataset.term;
+        alert(`你点击了${term}\n${getTermInfo(term)}`);
+      });
+    });
+
+    // 获取节气信息
+    function getTermInfo(term) {
+      const termInfo = {
+        "立春": "立春是二十四节气之首，标志着万物复苏的开始。",
+        "雨水": "雨水时节，气温回升，降雨开始增多。",
+        "惊蛰": "惊蛰时节，春雷乍动，惊醒蛰伏的昆虫。",
+        "春分": "春分昼夜平分，此后白昼渐长，黑夜渐短。",
+        "清明": "清明既是节气也是节日，有扫墓祭祖、踏青赏春的习俗。",
+        "谷雨": "谷雨是播种移苗、埯瓜点豆的最佳时节。",
+        "立夏": "立夏标志着夏季的开始，万物进入生长旺季。",
+        "小满": "小满时节，麦类等夏熟作物籽粒开始饱满。",
+        "芒种": "芒种是农作物种植的最后时机，过了此时再种则成活率降低。",
+        "夏至": "夏至是北半球白昼最长、黑夜最短的一天。",
+        "小暑": "小暑表示天气开始炎热，但还未到最热。",
+        "大暑": "大暑是一年中最热的时期，气温最高。",
+        "立秋": "立秋标志着秋季的开始，天气逐渐转凉。"
+      };
+      return termInfo[term] || "这是二十四节气之一。";
+    }
+
+    // 节气习俗卡片翻转
+    document.querySelectorAll('.custom-card').forEach(card => {
+      card.addEventListener('click', () => {
+        card.classList.toggle('flipped');
+      });
+    });
+
+    // 事件监听
+    document.querySelectorAll('.wheel-btn').forEach(btn => {
+      if (btn.dataset.season) {
+        btn.addEventListener('click', () => switchSeason(btn.dataset.season));
+      } else if (btn.dataset.pheno) {
+        btn.addEventListener('click', () => switchPhenology(btn.dataset.pheno));
+      }
+    });
+
+    // 测验下一题按钮
+    document.getElementById('quiz-next').addEventListener('click', nextQuizQuestion);
+
+    // 初始化
+    switchSeason('lichun');
+    switchPhenology('liuya');
+    updateCountdown();
+    updateQuizQuestion(currentQuestionIndex);
+
+    // 每秒更新倒计时
+    setInterval(updateCountdown, 1000);
+
+    // 响应窗口大小变化
+    window.addEventListener('resize', () => {
+      tempChart.resize();
+      phenologyChart.resize();
+    });
+
+    // 添加滚动动画效果
+    document.addEventListener('DOMContentLoaded', function() {
+      const modules = document.querySelectorAll('.module');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+          }
+        });
+      }, { threshold: 0.1 });
+      
+      modules.forEach(module => {
+        module.style.opacity = '0';
+        module.style.transform = 'translateY(30px)';
+        module.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+        observer.observe(module);
+      });
+    });
+  </script>
+
+</body>
+</html>
