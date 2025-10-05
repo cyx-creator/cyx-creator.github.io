@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>四立节气：传统与现代的时空对话</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css ">
+<style>
+/* 全局基础样式 */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  max-width: 1200px; margin: 0 auto; padding: 30px 20px; line-height: 1.8;
+  color: #333; background: url("水墨背景.jpg") center/cover fixed;
+  position: relative; z-index: 1;
+}
+/* 背景视频 */
+.background-video-container {
+  position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden;
+}
+.background-video { object-fit: cover; width: 100%; height: 100%; }
+
+/* 节气图片容器 */
+.solar-term-image-container {
+  width: 100%; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,.1);
+  margin: 0 0 20px; position: relative; background: #fff;
+}
+.solar-term-image-container::before { content: ""; display: block; padding-top: 138.8%; }
+.solar-term-image {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .5s;
+}
+.solar-term-image.loaded { opacity: 1; }
+
+/* 标题+小人+挑战按钮 */
+.term-header { display: flex; align-items: center; gap: 15px; margin: 60px 0 15px; }
+.term-character { height: 60px; border-radius: 8px; }
+.quiz-trigger-btn {
+  padding: 8px 15px; background: #3182ce; color: #fff; border: none; border-radius: 6px; cursor: pointer;
+  margin-left: auto; display: flex; align-items: center; gap: 8px;
+}
+.solar-term-title {
+  font-size: 24px; color: #3182ce; padding-left: 15px; border-left: 4px solid #3182ce;
+  background: rgba(255,255,255,.8); border-radius: 0 8px 8px 0; padding: 8px 15px; margin: 0; flex-grow: 1;
+}
+
+/* 时间轴 */
+.timeline { display: flex; justify-content: space-between; margin: 40px 0 60px; padding: 0 10px; overflow-x: auto; }
+.timeline-item { flex: 1; min-width: 80px; text-align: center; padding: 10px; margin: 0 5px; border-radius: 6px; cursor: pointer; white-space: nowrap; background: rgba(255,255,255,.8); transition: .3s; }
+.timeline-item.active { background: #3182ce; color: #fff; }
+.timeline-date { font-size: 12px; color: #666; margin-top: 5px; }
+
+/* 导语 */
+.intro { text-align: center; font-size: 18px; color: #666; margin-bottom: 20px; padding: 20px; background: rgba(255,255,255,.8); border-radius: 8px; font-family: "FZShuKai-Z01S","STKaiti","KaiTi",serif; font-weight: bold; line-height: 2.2; }
+
+/* 地域筛选 */
+.region-filter { margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+.region-btn { padding: 5px 12px; border: 1px solid #3182ce; border-radius: 20px; background: rgba(255,255,255,.8); color: #3182ce; cursor: pointer; font-size: 14px; transition: .2s; }
+.region-btn.active { background: #3182ce; color: #fff; }
+
+/* 表格 */
+table { width: 100%; border-collapse: collapse; margin-bottom: 40px; background: rgba(255,255,255,.9); box-shadow: 0 2px 8px rgba(0,0,0,.05); border-radius: 4px; overflow: hidden; font-family: "SimSun","Songti SC",serif; }
+th,td { border: 1px solid #e2e8f0; padding: 20px; text-align: left; }
+th { background: #edf2f7; font-weight: 600; color: #2d3748; font-size: 16px; }
+tr:hover { background: #f8fafc; }
+
+/* 展开/折叠 */
+.expandable { cursor: pointer; position: relative; padding-right: 30px; }
+.expandable::after { content: "\f078"; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); transition: transform .3s; color: #3182ce; }
+.expandable.expanded::after { transform: translateY(-50%) rotate(180deg); }
+.expand-content { max-height: 0; overflow: hidden; transition: max-height .5s; }
+.expand-content.show { max-height: 500px; }
+
+/* 互动区域 */
+.achievement-container { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin: 30px 0; }
+.badge-item { width: 80px; height: 80px; border-radius: 50%; background: #eee; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 12px; opacity: 0.5; transition: .3s; }
+.badge-item i { font-size: 24px; color: #3182ce; margin-bottom: 5px; }
+.certificate-container { text-align: center; margin: 30px 0; display: none; }
+.certificate-container > div { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+#downloadCert,#shareCert { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; margin: 0 10px; }
+#downloadCert { background: #3182ce; color: #fff; }
+#shareCert  { background: #22c55e; color: #fff; }
+
+.check-in-btn { padding: 10px 25px; background: #3182ce; color: #fff; border: none; border-radius: 20px; cursor: pointer; display: flex; align-items: center; margin: 0 auto; gap: 8px; }
+.footprint-panel { background: rgba(255,255,255,.8); border-radius: 8px; padding: 20px; margin: 30px 0; }
+.footprint-list { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 10px; }
+.footprint-item { flex: 0 0 auto; padding: 8px 16px; border-radius: 20px; background: #f0f0f0; font-size: 14px; white-space: nowrap; }
+.vote-panel { background: rgba(255,255,255,.8); border-radius: 8px; padding: 20px; margin: 20px 0; }
+.submit-vote { padding: 8px 20px; background: #22c55e; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+.result-bar { height: 10px; background: #3182ce; width: 0%; transition: width .5s; }
+
+/* 问答弹窗 */
+.quiz-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 100; align-items: center; justify-content: center; }
+.quiz-content { background: #fff; padding: 30px; border-radius: 12px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; }
+.quiz-title { color: #3182ce; margin-bottom: 20px; }
+.quiz-options { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
+.quiz-option { padding: 10px 15px; border: 1px solid #ccc; border-radius: 6px; cursor: pointer; transition: .2s; }
+.quiz-option:hover { background: #f8fafc; }
+.quiz-feedback { margin: 20px 0; padding: 10px; border-radius: 8px; display: none; }
+.quiz-buttons { display: flex; justify-content: flex-end; gap: 15px; margin-top: 20px; }
+.quiz-btn { padding: 8px 16px; border: 1px solid #ccc; border-radius: 6px; cursor: pointer; }
+#quizNext { background: #3182ce; color: #fff; border: none; display: none; }
+
+/* 响应式 */
+@media (max-width: 480px) { .solar-term-image-container { max-width: 100%; } table { display: block; overflow-x: auto; } .solar-term-title { font-size: 20px; } .term-character { height: 45px; } th,td { padding: 15px; font-size: 14px; } .intro { font-size: 16px; padding: 15px; } }
+</style>
+</head>
+<body>
+
+<!-- 背景视频 -->
+<div class="background-video-container">
+  <video class="background-video" autoplay loop muted playsinline>
+    <source src="背景视频.mp4" type="video/mp4">
+    您的浏览器不支持HTML5视频播放。
+  </video>
+</div>
+
+<!-- 导语 -->
+<div class="intro">
+  四立，宣告着四季的开启。古人在观星测影中感知时空流转，<br>
+  今人用数据解读气候变迁。让我们一起穿越传统与现代，感受节气文化的永恒魅力。
+</div>
+
+<!-- 勋章 -->
+<div class="achievement-container">
+  <div class="badge-item" id="lichunBadge"><i class="fas fa-seedling"></i>立春勋章</div>
+  <div class="badge-item" id="lixiaBadge"><i class="fas fa-leaf"></i>立夏勋章</div>
+  <div class="badge-item" id="liqiuBadge"><i class="fas fa-wind"></i>立秋勋章</div>
+  <div class="badge-item" id="lidongBadge"><i class="fas fa-snowflake"></i>立冬勋章</div>
+</div>
+
+<!-- 证书 -->
+<div class="certificate-container" id="certificateContainer">
+  <h3>恭喜获得「节气文化达人」证书！</h3>
+  <div>
+    <p style="font-size:18px; margin:10px 0;">授予 <span id="userName" style="font-weight:bold; color:#3182ce;">匿名用户</span></p>
+    <p style="font-size:20px; font-weight:bold; margin:20px 0; color:#333;">节气文化达人</p>
+    <p style="color:#666;">圆满完成四立节气知识挑战，特发此证，以资鼓励。</p>
+    <div style="margin-top:30px;">
+      <button id="downloadCert">下载证书</button>
+      <button id="shareCert">分享证书</button>
+    </div>
+  </div>
+</div>
+
+<!-- 时间轴 -->
+<div class="timeline">
+  <div class="timeline-item active" data-target="lichun">立春<div class="timeline-date">2月3-5日</div></div>
+  <div class="timeline-item" data-target="lixia">立夏<div class="timeline-date">5月5-7日</div></div>
+  <div class="timeline-item" data-target="liqiu">立秋<div class="timeline-date">8月7-9日</div></div>
+  <div class="timeline-item" data-target="lidong">立冬<div class="timeline-date">11月7-8日</div></div>
+</div>
+
+<!-- 足迹 -->
+<div class="footprint-panel">
+  <h3><i class="fas fa-shoe-prints"></i>我的节气足迹</h3>
+  <div class="footprint-list">
+    <div class="footprint-item" data-term="lichun"><i class="fas fa-circle" style="font-size:8px;"></i>立春（未打卡）</div>
+    <div class="footprint-item" data-term="lixia"><i class="fas fa-circle" style="font-size:8px;"></i>立夏（未打卡）</div>
+    <div class="footprint-item" data-term="liqiu"><i class="fas fa-circle" style="font-size:8px;"></i>立秋（未打卡）</div>
+    <div class="footprint-item" data-term="lidong"><i class="fas fa-circle" style="font-size:8px;"></i>立冬（未打卡）</div>
+  </div>
+</div>
+
+<!-- 立春 -->
+<div id="lichun" class="solar-term-section">
+  <div class="term-header">
+    <h2 class="solar-term-title">【立春】正月节，万物复苏之始</h2>
+    <button class="quiz-trigger-btn" data-term="lichun"><i class="fas fa-question-circle"></i> 知识挑战</button>
+    <img src="https://s21.ax1x.com/2025/10/03/pVTfEHf.md.jpg " alt="春Q版小人" class="term-character">
+  </div>
+  <div class="solar-term-image-container">
+    <img src="https://s21.ax1x.com/2025/10/03/pVTfkut.md.jpg " alt="立春景象：嫩芽破土" class="solar-term-image" onload="this.classList.add('loaded')">
+  </div>
+  <div class="region-filter">
+    <button class="region-btn active" data-region="all">全国</button>
+    <button class="region-btn" data-region="north">北方</button>
+    <button class="region-btn" data-region="south">南方</button>
+  </div>
+  <table>
+    <tr><th>传统 · 人文感知</th><th>数据引子 · 科学观测</th></tr>
+    <tr>
+      <td>
+        <div class="expandable"><span class="icon"><i class="fas fa-seedling"></i></span><strong>三候</strong></div>
+        <div class="expand-content">
+          · 一候东风解冻：东风送暖，大地开始解冻<br>
+          · 二候蛰虫始振：蛰居的虫类慢慢在洞中苏醒<br>
+          · 三候鱼陟负冰：河里的冰开始融化，鱼游至水面
+        </div>
+      </td>
+      <td>
+        <span class="icon"><i class="fas fa-chart-line"></i></span><strong>数据伏笔</strong><br>
+        古人通过<span class="keyword">圭表测影</span>确定立春，现代数据显示：
+        <span class="region-data all north">北方气温回升3-4℃</span>
+        <span class="region-data all south" style="display:none">南方气温回升1-2℃</span>
+        <span class="region-data all">，南北温差15-20℃。</span>
+        <br>
+        <a href="javascript:;" class="region-detail" data-region="north">查看北方详细气候与农事</a>
+        <a href="javascript:;" class="region-detail" data-region="south" style="display:none">查看南方详细气候与农事</a>
+      </td>
+    </tr>
+    <tr class="region-specific north-specific" style="display:none">
+      <td colspan="2">
+        <h4>北方立春：冰雪初融，春耕将始</h4>
+        <p><strong>气候特征</strong>：立春后，北方冷空气仍有较强势力，气温波动大，"倒春寒"现象频发。但总体趋势是气温稳步回升，土壤开始解冻，河流冰层逐渐消融。</p>
+        <p><strong>农事活动</strong>：<br>
+          - <strong>小麦管理</strong>：冬小麦进入返青期，是水肥管理的关键时期，需及时浇返青水、施返青肥，促进分蘖。<br>
+          - <strong>备耕备种</strong>：开始平整土地、修理农具、准备种子和化肥，为春播做准备。<br>
+          - <strong>果园管理</strong>：果树处于休眠期，进行冬季修剪，清除病枝、虫枝，并进行树干涂白，防治病虫害。
+        </p>
+        <p><strong>特色习俗</strong>：<br>
+          - <strong>咬春</strong>：吃生萝卜或春饼，寓意"咬"住春天，祈求健康。<br>
+          - <strong>打春牛</strong>：鞭打用泥土或纸扎成的春牛，象征着劝农春耕和祈求丰收。<br>
+          - <strong>躲春</strong>：部分地区认为立春是新旧太岁交接之时，容易犯太岁的人会选择"躲春"，即在立春时刻闭门不出，以避祸。
+        </p>
+      </td>
+    </tr>
+    <tr class="region-specific south-specific" style="display:none">
+      <td colspan="2">
+        <h4>南方立春：春意渐浓，油菜抽薹</h4>
+        <p><strong>气候特征</strong>：南方地区立春后气温回升明显，降水开始增多，进入"春雨绵绵"的季节。空气湿度增大，万物复苏的迹象比北方更为显著。</p>
+        <p><strong>农事活动</strong>：<br>
+          - <strong>油菜管理</strong>：油菜进入抽薹开花期，是产量形成的关键阶段，需追施薹肥，并注意防治菌核病。<br>
+          - <strong>水稻育秧</strong>：华南地区开始准备早稻育秧工作，选择适宜的品种和播期。<br>
+          - <strong>蔬菜管理</strong>：露地蔬菜如辣椒、茄子等开始播种育苗，保护地蔬菜进入快速生长期。
+        </p>
+        <p><strong>特色习俗</strong>：<br>
+          - <strong>祭春神</strong>：祭祀句芒神（春神），祈求风调雨顺、五谷丰登。<br>
+          - <strong>吃春卷</strong>：春卷内包有豆芽、韭菜等新鲜蔬菜，寓意迎春纳福。<br>
+          - <strong>探春</strong>：人们喜欢到郊外踏青，感受春天的气息，欣赏初开的梅花、桃花。
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td><span class="icon"><i class="fas fa-book"></i></span><strong>古诗句</strong><br>"律回岁晚冰霜少，<span class="poem">春到人间草木知</span>。"——张栻</td>
+      <td><span class="icon"><i class="fas fa-lightbulb"></i></span><strong>科学解读</strong><br>植物感知<span class="keyword">日照增加</span>和气温回升，启动萌发机制</td>
+    </tr>
+    <tr>
+      <td>
+        <div class="expandable"><span class="icon"><i class="fas fa-hand-sparkles"></i></span><strong>民俗活动</strong></div>
+        <div class="expand-content">
+          <span class="keyword">咬春</span>：吃萝卜、春饼<br>
+          迎春：祭祀祈丰收<br>
+          打春牛：象征劝农春耕
+        </div>
+      </td>
+      <td><span class="icon"><i class="fas fa-apple-alt"></i></span><strong>科学依据</strong><br>萝卜富含膳食纤维，帮助调节立春后加快的代谢</td>
+    </tr>
+  </table>
+  <div class="check-in-container">
+    <button class="check-in-btn" data-term="lichun"><i class="fas fa-map-marker-alt"></i> <span id="lichunCheckInText">打卡立春</span></button>
+  </div>
+  <div class="vote-panel">
+    <h4>你了解立春的哪项习俗？（可多选）</h4>
+    <div class="vote-options" data-term="lichun">
+      <label><input type="checkbox" name="lichunVote" value="咬春"> 咬春（吃萝卜/春饼）</label>
+      <label><input type="checkbox" name="lichunVote" value="打春牛"> 打春牛（劝农春耕）</label>
+      <label><input type="checkbox" name="lichunVote" value="躲春"> 躲春（避太岁）</label>
+    </div>
+    <button class="submit-vote" data-term="lichun">提交投票</button>
+    <div class="vote-result" data-term="lichun">
+      <h5>投票结果（共<span class="total-votes">0</span>人参与）</h5>
+      <div class="result-bar-container">
+        <div><span>咬春</span><div><div class="result-bar" data-option="咬春"></div></div><span class="result-percent" data-option="咬春">0%</span></div>
+        <div><span>打春牛</span><div><div class="result-bar" data-option="打春牛"></div></div><span class="result-percent" data-option="打春牛">0%</span></div>
+        <div><span>躲春</span><div><div class="result-bar" data-option="躲春"></div></div><span class="result-percent" data-option="躲春">0%</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 立夏 -->
+<div id="lixia" class="solar-term-section">
+  <div class="term-header">
+    <h2 class="solar-term-title">【立夏】四月节，万物并秀之时</h2>
+    <button class="quiz-trigger-btn" data-term="lixia"><i class="fas fa-question-circle"></i> 知识挑战</button>
+    <img src="https://s21.ax1x.com/2025/10/03/pVTfZE8.md.jpg " alt="夏Q版小人" class="term-character">
+  </div>
+  <div class="solar-term-image-container">
+    <img src="https://s21.ax1x.com/2025/10/03/pVTfC3d.md.jpg " alt="立夏景象：草木繁盛" class="solar-term-image" onload="this.classList.add('loaded')">
+  </div>
+  <div class="region-filter">
+    <button class="region-btn active" data-region="all">全国</button>
+    <button class="region-btn" data-region="north">北方</button>
+    <button class="region-btn" data-region="south">南方</button>
+  </div>
+  <table>
+    <tr><th>传统 · 人文感知</th><th>数据引子 · 科学观测</th></tr>
+    <tr>
+      <td>
+        <div class="expandable"><span class="icon"><i class="fas fa-leaf"></i></span><strong>三候</strong></div>
+        <div class="expand-content">
+          · 一候蝼蝈鸣：蝼蛄等蛙类开始鸣叫<br>
+          · 二候蚯蚓出：蚯蚓钻出地面，疏松土壤<br>
+          · 三候王瓜生：王瓜等藤蔓植物快速生长
+        </div>
+      </td>
+      <td>
+        <span class="icon"><i class="fas fa-chart-line"></i></span><strong>数据伏笔</strong><br>
+        古人观测<span class="keyword">北斗七星斗柄指向东南</span>为立夏。现代数据显示：
+        <span class="region-data all south">南方平均气温已达22-28℃</span>
+        <span class="region-data all north" style="display:none">北方平均气温在18-24℃</span>
+        <span class="region-data all">，是雷暴天气频次开始显著增加的起点。</span>
+        <br>
+        <a href="javascript:;" class="region-detail" data-region="north" style="display:none">查看北方详细气候与农事</a>
+        <a href="javascript:;" class="region-detail" data-region="south">查看南方详细气候与农事</a>
+      </td>
+    </tr>
+    <tr class="region-specific north-specific" style="display:none">
+      <td colspan="2">
+        <h4>北方立夏：春麦抽穗，万物繁茂</h4>
+        <p><strong>气候特征</strong>：立夏是北方由春入夏的过渡期，气温快速上升，但降水依然偏少，空气干燥。此时是一年中气温日较差较大的时期之一。</p>
+        <p><strong>农事活动</strong>：<br>
+          - <strong>小麦管理</strong>：冬小麦进入抽穗扬花期，是决定穗粒数的关键时期，需保证水分供应，防治赤霉病、蚜虫等病虫害。<br>
+          - <strong>春播作物</strong>：玉米、大豆、棉花等春播作物进入苗期，要及时查苗、补苗、定苗，并进行中耕除草。<br>
+          - <strong>果树管理</strong>：苹果、梨等果树进入幼果期，需进行疏果，保证果实品质，并防治食心虫等害虫。
+        </p>
+        <p><strong>特色习俗</strong>：<br>
+          - <strong>秤人</strong>：在村口或集市上挂起一杆大秤，大家轮流称体重，以检验夏季身体是否康健，寓意"称人免疰夏"。<br>
+          - <strong>尝新</strong>：品尝新上市的樱桃、青梅等鲜果。<br>
+          - <strong>吃鸡蛋</strong>：部分地区有吃茶叶蛋或咸鸭蛋的习俗，祈求夏日平安。
+        </p>
+      </td>
+    </tr>
+    <tr class="region-specific south-specific" style="display:none">
+      <td colspan="2">
+        <h4>南方立夏：炎暑将临，早稻分蘖</h4>
+        <p><strong>气候特征</strong>：南方地区已进入夏季，气温高，湿度大，雷暴、暴雨等强对流天气频繁。此时是"龙舟水"（华南前汛期）的高发期。</p>
+        <p><strong>农事活动</strong>：<br>
+          - <strong>水稻管理</strong>：早稻进入分蘖盛期，是决定有效穗数的关键阶段，需浅水勤灌，并适时追施分蘖肥。<br>
+          - <strong>棉花管理</strong>：棉花进入现蕾期，要及时整枝打杈，促进多结蕾、多开花。<br>
+          - <strong>防汛防涝</strong>：做好农田水利设施的检查和维护，预防暴雨洪涝灾害。
+        </p>
+        <p><strong>特色习俗</strong>：<br>
+          - <strong>吃五色饭</strong>：用赤豆、黄豆、黑豆、青豆、绿豆等五色豆拌合白糯米煮成"五色饭"，寓意五谷丰登。<br>
+          - <strong>吃立夏蛋</strong>：家家户户煮茶叶蛋，孩童们还会玩"斗蛋"游戏，蛋壳坚而不碎者为胜。<br>
+          - <strong>补夏</strong>：人们会吃一些富含营养的食物，如鸡鸭鱼肉等，以补充夏季消耗的体力。
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td><span class="icon"><i class="fas fa-book"></i></span><strong>古诗句</strong><br>"<span class="poem">绿树阴浓夏日长</span>，楼台倒影入池塘。"——高骈</td>
+      <td><span class="icon"><i class="fas fa-lightbulb"></i></span><strong>科学解读</strong><br>此时北半球获得的太阳辐射量达到全年峰值的60-70%，植物光合作用增强。</td>
+    </tr>
+    <tr>
+      <td>
+        <div class="expandable"><span class="icon"><i class="fas fa-hand-sparkles"></i></span><strong>民俗活动</strong></div>
+        <div class="expand-content">
+          <span class="keyword">称人</span>：称量体重，检验健康状况<br>
+          吃立夏蛋：祈求夏季不消瘦、不中暑<br>
+          尝新：品尝新收获的樱桃、青梅等
+        </div>
+      </td>
+      <td><span class="icon"><i class="fas fa-apple-alt"></i></span><strong>科学依据</strong><br>鸡蛋富含蛋白质和卵磷脂，能补充夏季新陈代谢加快所消耗的能量。</td>
+    </tr>
+  </table>
+  <div class="check-in-container">
+    <button class="check-in-btn" data-term="lixia"><i class="fas fa-map-marker-alt"></i> <span id="lixiaCheckInText">打卡立夏</span></button>
+  </div>
+  <div class="vote-panel">
+    <h4>你了解立夏的哪项习俗？（可多选）</h4>
+    <div class="vote-options" data-term="lixia">
+      <label><input type="checkbox" name="lixiaVote" value="称人"> 称人（检验健康）</label>
+      <label><input type="checkbox" name="lixiaVote" value="吃立夏蛋"> 吃立夏蛋（斗蛋游戏）</label>
+      <label><input type="checkbox" name="lixiaVote" value="尝新"> 尝新（品尝鲜果）</label>
+    </div>
+    <button class="submit-vote" data-term="lixia">提交投票</button>
+    <div class="vote-result" data-term="lixia">
+      <h5>投票结果（共<span class="total-votes">0</span>人参与）</h5>
+      <div class="result-bar-container">
+        <div><span>称人</span><div><div class="result-bar" data-option="称人"></div></div><span class="result-percent" data-option="称人">0%</span></div>
+        <div><span>吃立夏蛋</span><div><div class="result-bar" data-option="吃立夏蛋"></div></div><span class="result-percent" data-option="吃立夏蛋">0%</span></div>
+        <div><span>尝新</span><div><div class="result-bar" data-option="尝新"></div></div><span class="result-percent" data-option="尝新">0%</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 立秋 -->
+<div id="liqiu" class="solar-term-section">
+  <div class="term-header">
+    <h2 class="solar-term-title">【立秋】七月节，凉风有信之期</h2>
+    <button class="quiz-trigger-btn" data-term="liqiu"><i class="fas fa-question-circle"></i> 知识挑战</button>
+    <img src="https://s21.ax1x.com/2025/10/03/pVTfS4e.md.jpg " alt="秋Q版小人" class="term-character">
+  </div>
+  <div class="solar-term-image-container">
+    <img src="https://s21.ax1x.com/2025/10/03/pVTf99H.md.jpg " alt="立秋景象：秋叶渐黄" class="solar-term-image" onload="this.classList.add('loaded')">
+  </div>
+  <div class="region-filter">
+    <button class="region-btn active" data-region="all">全国</button>
+    <button class="region-btn" data-region="north">北方</button>
+    <button class="region-btn" data-region="south">南方</button>
+  </div>
+  <table>
+    <tr><th>传统 · 人文感知</th><th>数据引子 · 科学观测</th></tr>
+    <tr>
+      <td>
+        <div class="expandable"><span class="icon"><i class="fas fa-wind"></i></span><strong>三候</strong></div>
+        <div class="expand-content">
+          · 一候凉风至：刮风时人们会感觉到凉爽<br>
+          · 二候白露降：早晨会有雾气凝结成白色的露珠<br>
+          · 三候寒蝉鸣：寒蝉感知到阴气上升，开始鸣叫
+        </div>
+      </td>
+      <td>
+        <span class="icon"><i class="fas fa-chart-line"></i></span><strong>数据伏笔</strong><br>
+        虽名为立秋，但现代数据显示：
+        <span class="region-data all north">北方平均气温约22-26℃</span>
+        <span class="region-data all south" style="display:none">南方平均气温仍高达28-32℃</span>
+        <span class="region-data all">，大部分地区仍处在气象学意义上的夏季。</span>
+        <br>
+        <a href="javascript:;" class="region-detail" data-region="north">查看北方详细气候与农事</a>
+        <a href="javascript:;" class="region-detail" data-region="south" style="display:none">查看南方详细气候与农事</a>
+      </td>
+    </tr>
+    <tr class="region-specific north-specific" style="display:none">
+      <td colspan="2">
+        <h4>北方立秋：秋高气爽，瓜果飘香</h4>
+        <p><strong>气候特征</strong>：立秋后，北方地区率先感受到凉意，气温明显下降，昼夜温差增大，降水减少，空气干燥，进入一年中最舒适的"秋高气爽"时期。</p>
+        <p><strong>农事活动</strong>：<br>
+          - <strong>秋收大忙</strong>：立秋是北方秋收的开始，玉米、高粱、谷子等作物相继成熟，需要及时收割、晾晒、脱粒。<br>
+          - <strong>棉花采摘</strong>：棉花进入吐絮期，开始分批采摘。<br>
+          - <strong>蔬菜管理</strong>：大白菜、萝卜等秋菜进入播种和生长期，是产量形成的关键期。
+        </p>
+        <p><strong>特色习俗</strong>：<br>
+          - <strong>贴秋膘</strong>：经历了炎热的夏天，人们普遍消瘦。立秋这天要吃各种肉类，如炖肉、烤肉、红烧肉等，以"贴膘"，补充营养。<br>
+          - <strong>啃秋</strong>：在立秋这天吃西瓜或香瓜，俗称"啃秋"，寓意炎炎夏日酷热难熬，时逢立秋，将其"啃"下。<br>
+          - <strong>晒秋</strong>：利用立秋后的好天气，将收获的农作物（如玉米、辣椒、豆子等）晾晒在屋顶、院子里，便于储存。
+        </p>
+      </td>
+    </tr>
+    <tr class="region-specific south-specific" style="display:none">
+      <td colspan="2">
+        <h4>南方立秋：秋老虎肆虐，晚稻抽穗</h4>
+        <p><strong>气候特征</strong>：南方地区立秋后，往往会遭遇"秋老虎"天气，即持续一段时间的高温晴热天气。此时台风活动依然频繁，带来的降雨是晚稻生长的重要水源。</p>
+        <p><strong>农事活动</strong>：<br>
+          - <strong>晚稻管理</strong>：晚稻进入孕穗、抽穗扬花期，是产量形成的关键时期，需保证水分供应，并防治稻瘟病、稻飞虱等病虫害。<br>
+          - <strong>双抢收尾</strong>：长江中下游地区的"双抢"（抢收早稻、抢种晚稻）工作进入尾声。<br>
+          - <strong>水果采摘</strong>：立秋前后，南方的龙眼、荔枝、香蕉等热带水果进入采摘旺季。
+        </p>
+        <p><strong>特色习俗</strong>：<br>
+          - <strong>吃秋桃</strong>：在立秋当天吃一个桃子，把桃核留到除夕时丢进火炉中烧成灰烬，认为这样可以免除一年的瘟疫。<br>
+          - <strong>食小赤豆</strong>：在立秋前一天，用冷水吞服七粒小赤豆，据说可以防止疟疾。<br>
+          - <strong>喝秋水</strong>：在立秋时节，喝一杯"秋水"（清晨的井水），寓意消积暑，免秋来腹泻。
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td><span class="icon"><i class="fas fa-book"></i></span><strong>古诗句</strong><br>"<span class="poem">睡起秋声无觅处</span>，满阶梧桐月明中。"——刘翰</td>
+      <td><span class="icon"><i class="fas fa-lightbulb"></i></span><strong>科学解读</strong><br>此时<span class="keyword">昼夜温差开始增大</span>，平均差值较夏季增加2-3℃，夜间辐射冷却效应明显。</td>
+    </tr>
+    <tr>
+      <td>
+        <div class="expandable"><span class="icon"><i class="fas fa-hand-sparkles"></i></span><strong>民俗活动</strong></div>
+        <div class="expand-content">
+          <span class="keyword">晒秋</span>：将收获的农作物晾晒，便于储存<br>
+          贴秋膘：立秋后进补肉类，弥补夏季消瘦<br>
+          啃秋：吃西瓜等，寓意啃下"秋老虎"
+        </div>
+      </td>
+      <td><span class="icon"><i class="fas fa-apple-alt"></i></span><strong>科学依据</strong><br>立秋后基础代谢率随气温下降而降低，适当增加热量摄入有助于储存能量应对即将到来的寒冷季节。</td>
+    </tr>
+  </table>
+  <div class="check-in-container">
+    <button class="check-in-btn" data-term="liqiu"><i class="fas fa-map-marker-alt"></i> <span id="liqiuCheckInText">打卡立秋</span></button>
+  </div>
+  <div class="vote-panel">
+    <h4>你了解立秋的哪项习俗？（可多选）</h4>
+    <div class="vote-options" data-term="liqiu">
+      <label><input type="checkbox" name="liqiuVote" value="晒秋"> 晒秋（晾晒作物）</label>
+      <label><input type="checkbox" name="liqiuVote" value="贴秋膘"> 贴秋膘（进补肉类）</label>
+      <label><input type="checkbox" name="liqiuVote" value="啃秋"> 啃秋（吃西瓜）</label>
+    </div>
+    <button class="submit-vote" data-term="liqiu">提交投票</button>
+    <div class="vote-result" data-term="liqiu">
+      <h5>投票结果（共<span class="total-votes">0</span>人参与）</h5>
+      <div class="result-bar-container">
+        <div><span>晒秋</span><div><div class="result-bar" data-option="晒秋"></div></div><span class="result-percent" data-option="晒秋">0%</span></div>
+        <div><span>贴秋膘</span><div><div class="result-bar" data-option="贴秋膘"></div></div><span class="result-percent" data-option="贴秋膘">0%</span></div>
+        <div><span>啃秋</span><div><div class="result-bar" data-option="啃秋"></div></div><span class="result-percent" data-option="啃秋">0%</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 立冬 -->
+<div id="lidong" class="solar-term-section">
+  <div class="term-header">
+    <h2 class="solar-term-title">【立冬】十月节，万物收藏之始</h2>
+    <button class="quiz-trigger-btn" data-term="lidong"><i class="fas fa-question-circle"></i> 知识挑战</button>
+    <img src="https://s21.ax1x.com/2025/10/04/pVTXGlV.jpg" alt="冬Q版小人" class="term-character">
+  </div>
+  <div class="solar-term-image-container">
+    <img src="https://s21.ax1x.com/2025/10/03/pVTfijI.md.jpg " alt="立冬景象：初雪降临" class="solar-term-image" onload="this.classList.add('loaded')">
+  </div>
+  <div class="region-filter">
+    <button class="region-btn active" data-region="all">全国</button>
+    <button class="region-btn" data-region="north">北方</button>
+    <button class="region-btn" data-region="south">南方</button>
+  </div>
+  <table>
+    <tr><th>传统 · 人文感知</th><th>数据引子 · 科学观测</th></tr>
+    <tr>
+      <td>
+        <div class="expandable"><span class="icon"><i class="fas fa-snowflake"></i></span><strong>三候</strong></div>
+        <div class="expand-content">
+          · 一候水始冰：水开始结冰，但冰面尚不坚固<br>
+          · 二候地始冻：土地开始冻结，表层出现冻土层<br>
+          · 三候雉入大水为蜃：野鸡等鸟类减少
+        </div>
+      </td>
+      <td>
+        <span class="icon"><i class="fas fa-chart-line"></i></span><strong>数据伏笔</strong><br>
+        古人观测到<span class="keyword">北斗七星斗柄指向西北</span>，冬季伊始。数据显示：
+        <span class="region-data all north">北方立冬平均气温已降至0-8℃</span>
+        <span class="region-data all south" style="display:none">南方立冬平均气温仍在10-18℃</span>
+        <span class="region-data all">，是北方寒潮南下频率显著增强的转折点。</span>
+        <br>
+        <a href="javascript:;" class="region-detail" data-region="north">查看北方详细气候与农事</a>
+        <a href="javascript:;" class="region-detail" data-region="south" style="display:none">查看南方详细气候与农事</a>
+      </td>
+    </tr>
+    <tr class="region-specific north-specific" style="display:none">
+      <td colspan="2">
+        <h4>北方立冬：朔风凛冽，万物封藏</h4>
+        <p><strong>气候特征</strong>：立冬后，北方地区全面进入冬季，气温急剧下降，降水稀少，空气干燥寒冷。东北地区开始出现大规模降雪，土壤封冻。</p>
+        <p><strong>农事活动</strong>：<br>
+          - <strong>农事结束</strong>：大部分农作物已收获完毕，田间农活基本结束，进入农闲期。<br>
+          - <strong>果树防寒</strong>：对果树进行涂白、绑草绳等防寒措施，保护树体安全越冬。<br>
+          - <strong>牲畜管理</strong>：加强牲畜的饲养管理，增加精饲料，做好防寒保暖工作。
+        </p>
+        <p><strong>特色习俗</strong>：<br>
+          - <strong>吃饺子</strong>：北方地区立冬有吃饺子的习俗。因为饺子的形状像耳朵，人们认为吃了它，冬天耳朵就不会受冻。另外，饺子谐音"交子"，意指立冬是秋冬季节之交。<br>
+          - <strong>冬储大白菜</strong>：在物资匮乏的年代，立冬后人们会大量购买和储存大白菜，作为整个冬天的主要蔬菜。这一习俗在现代城市虽已淡化，但在农村仍有保留。<br>
+          - <strong>酿黄酒</strong>：部分地区有在立冬这天开始酿黄酒的传统，利用冬季的低温环境，使酒能慢慢发酵，味道更加醇厚。
+        </p>
+      </td>
+    </tr>
+    <tr class="region-specific south-specific" style="display:none">
+      <td colspan="2">
+        <h4>南方立冬：气温骤降，晚稻登场</h4>
+        <p><strong>气候特征</strong>：南方地区立冬后气温才真正开始下降，但仍比北方温暖许多。此时是台风活动的尾声，偶尔仍会有台风影响。</p>
+        <p><strong>农事活动</strong>：<br>
+          - <strong>晚稻收割</strong>：立冬是南方晚稻成熟收割的关键时期，需抢晴收割，确保颗粒归仓。<br>
+          - <strong>油菜移栽</strong>：晚稻收割后，及时整地移栽油菜，保证油菜安全越冬。<br>
+          - <strong>蔬菜管理</strong>：加强冬季蔬菜的田间管理，做好防寒工作。
+        </p>
+        <p><strong>特色习俗</strong>：<br>
+          - <strong>补冬</strong>：南方有立冬"补冬"的习俗，认为此时进补能更好地抵御冬天的严寒。人们会吃一些温热滋补的食物，如鸡鸭鱼肉、羊肉炉、姜母鸭等。<br>
+          - <strong>吃甘蔗</strong>：在福建、潮汕等地，立冬要吃甘蔗，民间有"立冬食蔗不会齿痛"的说法，认为立冬吃甘蔗可以保护牙齿，同时也寓意着甜甜蜜蜜。<br>
+          - <strong>酿米酒</strong>：南方一些地区也有立冬酿酒的传统，主要是酿造米酒或黄酒，供春节饮用。
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td><span class="icon"><i class="fas fa-book"></i></span><strong>古诗句</strong><br>"<span class="poem">冻笔新诗懒写</span>，寒炉美酒时温。"——李白</td>
+      <td><span class="icon"><i class="fas fa-lightbulb"></i></span><strong>科学解读</strong><br>当环境温度低于15℃时，人体手部血液循环减缓，手指灵活性下降，这正是"冻笔"现象的科学解释。</td>
+    </tr>
+    <tr>
+      <td>
+        <div class="expandable"><span class="icon"><i class="fas fa-hand-sparkles"></i></span><strong>民俗活动</strong></div>
+        <div class="expand-content">
+          <span class="keyword">补冬</span>：食用温热食物进补，增强御寒能力<br>
+          吃饺子：北方习俗，寓意"交子之时"，新旧交替<br>
+          酿黄酒：利用冬季低温环境，酿造来年饮用的黄酒
+        </div>
+      </td>
+      <td><span class="icon"><i class="fas fa-apple-alt"></i></span><strong>科学依据</strong><br>当环境温度低于人体舒适温度时，人体散热增加，基础代谢率提高，需要适当增加能量摄入以维持体温稳定。</td>
+    </tr>
+  </table>
+  <div class="check-in-container">
+    <button class="check-in-btn" data-term="lidong"><i class="fas fa-map-marker-alt"></i> <span id="lidongCheckInText">打卡立冬</span></button>
+  </div>
+  <div class="vote-panel">
+    <h4>你了解立冬的哪项习俗？（可多选）</h4>
+    <div class="vote-options" data-term="lidong">
+      <label><input type="checkbox" name="lidongVote" value="补冬"> 补冬（温热进补）</label>
+      <label><input type="checkbox" name="lidongVote" value="吃饺子"> 吃饺子（北方习俗）</label>
+      <label><input type="checkbox" name="lidongVote" value="酿黄酒"> 酿黄酒（冬季酿造）</label>
+    </div>
+    <button class="submit-vote" data-term="lidong">提交投票</button>
+    <div class="vote-result" data-term="lidong">
+      <h5>投票结果（共<span class="total-votes">0</span>人参与）</h5>
+      <div class="result-bar-container">
+        <div><span>补冬</span><div><div class="result-bar" data-option="补冬"></div></div><span class="result-percent" data-option="补冬">0%</span></div>
+        <div><span>吃饺子</span><div><div class="result-bar" data-option="吃饺子"></div></div><span class="result-percent" data-option="吃饺子">0%</span></div>
+        <div><span>酿黄酒</span><div><div class="result-bar" data-option="酿黄酒"></div></div><span class="result-percent" data-option="酿黄酒">0%</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 问答弹窗 -->
+<div class="quiz-modal" id="quizModal">
+  <div class="quiz-content">
+    <h3 class="quiz-title" id="quizTitle">立春知识小测</h3>
+    <div class="quiz-question" id="quizQuestion"></div>
+    <div class="quiz-options" id="quizOptions"></div>
+    <div class="quiz-feedback" id="quizFeedback"></div>
+    <div class="quiz-buttons">
+      <button class="quiz-btn" id="quizClose">关闭</button>
+      <button class="quiz-btn" id="quizNext">下一题</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ 以下脚本与之前完全一致（零省略） ============
+// 1. 展开/折叠
+document.querySelectorAll('.expandable').forEach(item=>{
+  item.addEventListener('click',()=>{
+    item.classList.toggle('expanded');
+    item.nextElementSibling.classList.toggle('show');
+  });
+});
+
+// 2. 时间轴导航
+document.querySelectorAll('.timeline-item').forEach(item=>{
+  item.addEventListener('click',()=>{
+    document.querySelectorAll('.timeline-item').forEach(i=>i.classList.remove('active'));
+    item.classList.add('active');
+    const target=document.getElementById(item.dataset.target);
+    target.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+
+// 3. 地域筛选与详情展开
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.region-btn').forEach(btn=>{
+    btn.addEventListener('click',function(){
+      const regionFilter=this.closest('.region-filter');
+      const region=this.getAttribute('data-region');
+      const table=regionFilter.nextElementSibling;
+      regionFilter.querySelectorAll('.region-btn').forEach(b=>b.classList.remove('active'));
+      this.classList.add('active');
+      table.querySelectorAll('.region-data').forEach(d=>{
+        d.style.display=(d.classList.contains(region)||d.classList.contains('all'))?'':'none';
+      });
+      table.querySelectorAll('.region-detail').forEach(a=>{
+        a.style.display=(a.dataset.region===region)?'':'none';
+      });
+      table.querySelectorAll('.region-specific').forEach(r=>{
+        r.style.display=(r.classList.contains(region+'-specific'))?'':'none';
+      });
+    });
+  });
+  document.querySelectorAll('.region-detail').forEach(link=>{
+    link.addEventListener('click',function(){
+      const region=this.dataset.region;
+      const table=this.closest('table');
+      table.querySelectorAll('.region-specific').forEach(r=>{
+        r.style.display=(r.classList.contains(region+'-specific'))?'':'none';
+      });
+      const targetRow=table.querySelector('.'+region+'-specific');
+      if(targetRow) targetRow.scrollIntoView({behavior:'smooth',block:'nearest'});
+    });
+  });
+});
+
+// 4. 问答闯关
+const quizBank={
+  lichun:[
+    {question:"立春三候中的“一候”是以下哪项？",options:["东风解冻","蛰虫始振","鱼陟负冰"],answer:0,explain:"立春一候为“东风解冻”，指东风送暖，大地开始解冻，是万物复苏的初始信号。"},
+    {question:"北方立春后气温回升幅度约为多少？",options:["3-4℃","1-2℃","5-6℃"],answer:0,explain:"现代数据显示，北方立春后气温回升3-4℃，但仍需注意“倒春寒”影响。"}
+  ],
+  lixia:[
+    {question:"立夏民俗中“称人”的寓意是？",options:["检验夏季健康状况","祈求丰收","纪念古人"],answer:0,explain:"立夏“称人”习俗源于古代，通过称量体重检验夏季身体是否康健，寓意“称人免疰夏”。"},
+    {question:"立夏时北半球获得的太阳辐射量占全年峰值的比例是？",options:["60-70%","80-90%","40-50%"],answer:0,explain:"立夏时北半球太阳辐射量达全年峰值的60-70%，植物光合作用增强，进入生长旺盛期。"}
+  ],
+  liqiu:[
+    {question:"立秋“贴秋膘”习俗的核心目的是？",options:["补充夏季消耗的营养","庆祝丰收","驱寒保暖"],answer:0,explain:"夏季炎热导致食欲下降，立秋“贴秋膘”通过食用肉类补充营养，为冬季储备能量。"},
+    {question:"立秋后昼夜温差较夏季增加约多少？",options:["2-3℃","4-5℃","1-2℃"],answer:0,explain:"立秋后夜间辐射冷却效应明显，昼夜温差较夏季增加2-3℃，形成“秋高气爽”的气候特征。"}
+  ],
+  lidong:[
+    {question:"北方立冬吃饺子的寓意不包括以下哪项？",options:["祈求来年丰收","“交子”新旧交替","防止耳朵受冻"],answer:0,explain:"北方立冬吃饺子，一是因形状像耳朵，防冬季冻耳；二是谐音“交子”，象征秋冬交替，与“祈求丰收”无关。"},
+    {question:"立冬时北方平均气温范围是？",options:["0-8℃","10-18℃","-5-0℃"],answer:0,explain:"数据显示，立冬时北方平均气温降至0-8℃，土壤开始封冻，进入气象学意义上的冬季。"}
+  ]
+};
+let currentTerm="",currentQuizIndex=0,earnedBadges=[];
+const quizModal=document.getElementById("quizModal");
+const quizTitle=document.getElementById("quizTitle");
+const quizQuestion=document.getElementById("quizQuestion");
+const quizOptions=document.getElementById("quizOptions");
+const quizFeedback=document.getElementById("quizFeedback");
+const quizClose=document.getElementById("quizClose");
+const quizNext=document.getElementById("quizNext");
+function getTermName(t){const m={lichun:"立春",lixia:"立夏",liqiu:"立秋",lidong:"立冬"};return m[t];}
+function loadQuiz(term,index){
+  const quiz=quizBank[term][index];
+  quizTitle.textContent=`${getTermName(term)}知识小测（第${index+1}/${quizBank[term].length}题）`;
+  quizQuestion.textContent=quiz.question;
+  quizOptions.innerHTML="";
+  quizFeedback.style.display="none";quizNext.style.display="none";
+  quiz.options.forEach((opt,i)=>{
+    const option=document.createElement("div");option.className="quiz-option";
+    option.innerHTML=`<span style="margin-right:10px;">${i+1}.</span>${opt}`;
+    option.addEventListener("click",()=>checkAnswer(term,index,i));
+    quizOptions.appendChild(option);
+  });
+}
+function checkAnswer(term,index,userAnswer){
+  const quiz=quizBank[term][index];
+  const options=document.querySelectorAll(".quiz-option");
+  options.forEach(opt=>opt.style.pointerEvents="none");
+  if(userAnswer===quiz.answer){
+    options[userAnswer].style.background="#dcfce7";options[userAnswer].style.borderColor="#22c55e";
+    quizFeedback.textContent="回答正确！"+quiz.explain;quizFeedback.style.background="#dcfce7";quizFeedback.style.color="#166534";
+  }else{
+    options[userAnswer].style.background="#fee2e2";options[userAnswer].style.borderColor="#ef4444";
+    options[quiz.answer].style.background="#dcfce7";options[quiz.answer].style.borderColor="#22c55e";
+    quizFeedback.textContent="回答错误，正确答案是："+quiz.options[quiz.answer]+"。"+quiz.explain;
+    quizFeedback.style.background="#fee2e2";quizFeedback.style.color="#b91c1c";
+  }
+  quizFeedback.style.display="block";
+  if(index===quizBank[term].length-1){
+    earnedBadges.push(term);unlockBadge(term);
+    quizNext.textContent="关闭弹窗";quizNext.style.display="inline-block";
+    if(earnedBadges.length===4){
+      setTimeout(()=>{
+        document.getElementById("certificateContainer").style.display="block";
+        const userName=prompt("恭喜！请输入你的昵称，生成专属证书：");if(userName)document.getElementById("userName").textContent=userName;
+      },1500);
+    }
+  }else{
+    quizNext.textContent="下一题";quizNext.style.display="inline-block";
+  }
+}
+function unlockBadge(term){
+  const badge=document.getElementById(`${term}Badge`);
+  badge.style.opacity="1";badge.style.background="#eff6ff";badge.style.boxShadow="0 4px 8px rgba(49,130,206,.3)";
+  badge.style.animation="badgeBounce .5s ease";
+}
+quizClose.addEventListener("click",()=>{quizModal.style.display="none";});
+quizNext.addEventListener("click",()=>{
+  if(currentQuizIndex===quizBank[currentTerm].length-1){quizModal.style.display="none";}
+  else{currentQuizIndex++;loadQuiz(currentTerm,currentQuizIndex);}
+});
+document.querySelectorAll('.quiz-trigger-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    const termId=this.getAttribute('data-term');
+    if(earnedBadges.includes(termId)){alert(`你已成功挑战过【${getTermName(termId)}】知识，获得了勋章！`);return;}
+    currentTerm=termId;currentQuizIndex=0;loadQuiz(termId,0);quizModal.style.display="flex";
+  });
+});
+const termSections=document.querySelectorAll(".solar-term-section");
+const observer=new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting&&entry.intersectionRatio>0.5){
+      const termId=entry.target.id;
+      if(!earnedBadges.includes(termId)&&currentTerm===""){
+        currentTerm=termId;currentQuizIndex=0;loadQuiz(termId,0);quizModal.style.display="flex";
+      }
+    }
+  });
+},{rootMargin:"0px",threshold:0.5});
+termSections.forEach(section=>observer.observe(section));
+
+// 5. 证书下载与分享
+document.getElementById("downloadCert").addEventListener("click",()=>{
+  const certContainer=document.querySelector(".certificate-container>div");
+  const canvas=document.createElement("canvas");
+  const rect=certContainer.getBoundingClientRect();
+  canvas.width=rect.width;canvas.height=rect.height;
+  const ctx=canvas.getContext("2d");
+  ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.strokeStyle="#e2e8f0";ctx.lineWidth=2;ctx.strokeRect(10,10,canvas.width-20,canvas.height-20);
+  const userName=document.getElementById("userName").textContent;
+  ctx.font="bold 20px 'Noto Sans SC',sans-serif";ctx.fillStyle="#333";ctx.textAlign="center";ctx.fillText("节气文化达人",canvas.width/2,80);
+  ctx.font="18px 'Noto Sans SC',sans-serif";ctx.fillStyle="#3182ce";ctx.fillText(`授予：${userName}`,canvas.width/2,130);
+  ctx.font="14px 'Noto Sans SC',sans-serif";ctx.fillStyle="#666";ctx.fillText("圆满完成四立节气知识挑战，特发此证，以资鼓励。",canvas.width/2,180);
+  ctx.font="12px 'Noto Sans SC',sans-serif";ctx.fillStyle="#666";ctx.fillText(`生成时间：${new Date().toLocaleDateString()}`,canvas.width/2,230);
+  canvas.toBlob(blob=>{
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");a.href=url;a.download=`节气文化达人证书_${userName}.png`;a.click();
+    URL.revokeObjectURL(url);
+  },"image/png");
+  alert("证书图片生成中，即将开始下载～");
+});
+function copyToClipboard(text){
+  navigator.clipboard.writeText(text)
+    .then(()=>alert("分享文案已复制到剪贴板，可粘贴到微信/朋友圈分享～"))
+    .catch(err=>{alert("复制失败，请手动复制链接："+window.location.href);console.log(err);});
+}
+document.getElementById("shareCert").addEventListener("click",()=>{
+  const shareText=`我在「四立节气」网页中获得了「节气文化达人」证书！快来挑战：${window.location.href}`;
+  if(navigator.share){
+    navigator.share({title:"节气文化达人证书",text:shareText,url:window.location.href})
+      .then(()=>alert("分享成功！"))
+      .catch(err=>{console.log(err);copyToClipboard(shareText);});
+  }else{copyToClipboard(shareText);}
+});
+
+// 6. 节气打卡
+let checkedInTerms=[];
+function updateFootprintPanel(){
+  document.querySelectorAll('.footprint-item').forEach(item=>{
+    const term=item.dataset.term;
+    if(checkedInTerms.includes(term)){
+      item.style.background="#dcfce7";item.style.color="#166534";
+      item.innerHTML=`<i class="fas fa-check-circle" style="font-size:8px;color:#22c55e;"></i>${getTermName(term)}（已打卡）`;
+      const btnText=document.querySelector(`.check-in-btn[data-term="${term}"] span`);
+      if(btnText)btnText.textContent=`已打卡 ${getTermName(term)}`;
+    }
+  });
+}
+document.querySelectorAll(".check-in-btn").forEach(btn=>{
+  btn.addEventListener("click",function(){
+    const term=this.dataset.term;
+    if(checkedInTerms.includes(term)){alert(`你已打卡过${getTermName(term)}啦～`);return;}
+    checkedInTerms.push(term);
+    updateFootprintPanel();
+    alert(`恭喜！成功打卡${getTermName(term)}，继续探索其他节气吧～`);
+  });
+});
+
+// 7. 投票
+let voteData=JSON.parse(localStorage.getItem("solarTermVotes"))||{
+  lichun:{total:0,options:{"咬春":0,"打春牛":0,"躲春":0}},
+  lixia:{total:0,options:{"称人":0,"吃立夏蛋":0,"尝新":0}},
+  liqiu:{total:0,options:{"晒秋":0,"贴秋膘":0,"啃秋":0}},
+  lidong:{total:0,options:{"补冬":0,"吃饺子":0,"酿黄酒":0}}
+};
+function loadVoteResults(){
+  Object.keys(voteData).forEach(term=>{
+    if(voteData[term].total===0)return;
+    const panel=document.querySelector(`.vote-result[data-term="${term}"]`);
+    if(!panel)return;
+    panel.style.display="block";
+    panel.querySelector(".total-votes").textContent=voteData[term].total;
+    Object.keys(voteData[term].options).forEach(opt=>{
+      const count=voteData[term].options[opt];
+      const percent=voteData[term].total===0?0:Math.round((count/voteData[term].total)*100);
+      const bar=panel.querySelector(`.result-bar[data-option="${opt}"]`);
+      const percentText=panel.querySelector(`.result-percent[data-option="${opt}"]`);
+      if(bar)bar.style.width=`${percent}%`;
+      if(percentText)percentText.textContent=`${percent}%`;
+    });
+  });
+}
+loadVoteResults();
+document.querySelectorAll(".submit-vote").forEach(btn=>{
+  btn.addEventListener("click",function(){
+    const term=this.dataset.term;
+    const checkboxes=document.querySelectorAll(`input[name="${term}Vote"]:checked`);
+    if(checkboxes.length===0){alert("请至少选择一项习俗再提交哦～");return;}
+    voteData[term].total+=1;
+    checkboxes.forEach(cb=>{voteData[term].options[cb.value]+=1;});
+    localStorage.setItem("solarTermVotes",JSON.stringify(voteData));
+    loadVoteResults();
+    checkboxes.forEach(cb=>cb.disabled=true);
+    this.textContent="已投票，查看结果";this.style.background="#94a3b8";
+  });
+});
+// ============ 脚本结束 ============
+</script>
+</body>
+</html>
