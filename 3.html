@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>四立时节 · 简约生活指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        // 配置Tailwind自定义颜色和字体
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8B5A2B',
+                        spring: '#7CFC00',
+                        summer: '#1E90FF',
+                        autumn: '#FFA500',
+                        winter: '#D3D3D3',
+                        neutral: '#F5F5DC'
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans SC', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+            .section-transition {
+                transition: opacity 0.5s ease, transform 0.5s ease;
+            }
+            .img-cover {
+                object-fit: cover;
+                width: 100%;
+                height: 100%;
+            }
+            .template-card {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                cursor: pointer;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-neutral min-h-screen font-sans text-gray-800">
+    <!-- 顶部导航栏 -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-sm shadow-sm transition-all duration-300">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-primary">
+                <i class="fa fa-leaf mr-2"></i>四立时节指南
+            </h1>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="#" class="nav-link text-primary hover:text-primary/80 transition-colors" data-target="home">首页</a></li>
+                    <li><a href="#" class="nav-link text-spring hover:text-spring/80 transition-colors" data-target="spring">立春</a></li>
+                    <li><a href="#" class="nav-link text-summer hover:text-summer/80 transition-colors" data-target="summer">立夏</a></li>
+                    <li><a href="#" class="nav-link text-autumn hover:text-autumn/80 transition-colors" data-target="autumn">立秋</a></li>
+                    <li><a href="#" class="nav-link text-winter hover:text-winter/80 transition-colors" data-target="winter">立冬</a></li>
+                </ul>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden text-primary text-xl">
+                <i class="fa fa-bars"></i>
+            </button>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="container mx-auto px-4 py-2">
+                <ul class="space-y-3 py-2">
+                    <li><a href="#" class="block py-2 nav-link text-primary" data-target="home">首页</a></li>
+                    <li><a href="#" class="block py-2 nav-link text-spring" data-target="spring">立春</a></li>
+                    <li><a href="#" class="block py-2 nav-link text-summer" data-target="summer">立夏</a></li>
+                    <li><a href="#" class="block py-2 nav-link text-autumn" data-target="autumn">立秋</a></li>
+                    <li><a href="#" class="block py-2 nav-link text-winter" data-target="winter">立冬</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- 首页内容 - 只保留4个节气模板 -->
+        <section id="home" class="section active py-12">
+            <!-- 英雄区域 -->
+            <div class="relative h-[50vh] md:h-[60vh] flex items-center justify-center overflow-hidden">
+                <div class="absolute inset-0 z-0">
+                    <img src="https://picsum.photos/id/1018/1920/1080" alt="四季风景" class="w-full h-full object-cover opacity-60">
+                    <div class="absolute inset-0 bg-gradient-to-b from-primary/30 to-primary/60"></div>
+                </div>
+                <div class="container mx-auto px-4 z-10 text-center">
+                    <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 text-shadow">
+                        四立时节 · 简约生活指南
+                    </h1>
+                    <p class="text-xl md:text-2xl text-white max-w-3xl mx-auto text-shadow">
+                        四季轮转，关怀不变。点击下方节气模板，探索每个季节的生活智慧。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 四个节气模板区域 -->
+            <section class="py-16 bg-white">
+                <div class="container mx-auto px-4">
+                    <h2 class="text-3xl font-bold text-center mb-12 text-primary">
+                        <i class="fa fa-calendar-check-o mr-2"></i>四立时节模板
+                    </h2>
+                    
+                    <!-- 四个节气模板卡片 -->
+                    <div class="grid grid-cols-1 gap-8">
+                        <!-- 立春模板 -->
+                        <div class="template-card bg-gradient-to-br from-spring/10 to-white rounded-2xl shadow-md overflow-hidden card-hover group" data-target="spring">
+                            <div class="h-64 overflow-hidden">
+                                <img src="https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/eee9929ba12147ccb37f9ffe8aac0e67.jpg~tplv-a9rns2rl98-24:720:720.image?rcl=20250930190823ECE2A6D299FA34441261&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1759835303&x-signature=0GwGCoW8qcd3feLjTpz44oLoRFU%3D" alt="立春景色：有牛和农民在树下的乡村景象" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            </div>
+                            <div class="p-6 flex-grow flex flex-col">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-10 h-10 rounded-full bg-spring/20 flex items-center justify-center mr-3">
+                                        <i class="fa fa-leaf text-spring text-xl"></i>
+                                    </div>
+                                    <h3 class="text-2xl font-bold text-spring">立春</h3>
+                                </div>
+                                <p class="text-gray-600 mb-4 flex-grow">万物复苏，春意渐浓。适合踏青，感受新生的力量。</p>
+                                <div class="text-spring font-medium flex items-center mt-auto">
+                                    查看详情 <i class="fa fa-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 立夏模板 -->
+                        <div class="template-card bg-gradient-to-br from-summer/10 to-white rounded-2xl shadow-md overflow-hidden card-hover group" data-target="summer">
+                            <div class="h-64 overflow-hidden">
+                                <img src="https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/373fb230c5c04e6bb537ddbffd7f0759.jpg~tplv-a9rns2rl98-24:720:720.image?rcl=20250930190823ECE2A6D299FA34441261&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1759835303&x-signature=PbqZ3yejNXwYXFehRsV%2BUOEvnjA%3D" alt="立夏景色：草地上有牛和木屋的乡村风光" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            </div>
+                            <div class="p-6 flex-grow flex flex-col">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-10 h-10 rounded-full bg-summer/20 flex items-center justify-center mr-3">
+                                        <i class="fa fa-sun-o text-summer text-xl"></i>
+                                    </div>
+                                    <h3 class="text-2xl font-bold text-summer">立夏</h3>
+                                </div>
+                                <p class="text-gray-600 mb-4 flex-grow">夏日初至，暑气渐升。注意防暑降温，保持清爽。</p>
+                                <div class="text-summer font-medium flex items-center mt-auto">
+                                    查看详情 <i class="fa fa-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 立秋模板 -->
+                        <div class="template-card bg-gradient-to-br from-autumn/10 to-white rounded-2xl shadow-md overflow-hidden card-hover group" data-target="autumn">
+                            <div class="h-64 overflow-hidden">
+                                <img src="https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/193ed074075a4507be06aa317f8d8fc3.jpg~tplv-a9rns2rl98-24:720:720.image?rcl=20250930190823ECE2A6D299FA34441261&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1759835303&x-signature=h26iPIrdVyLGyzPwPIN2TfGxjeg%3D" alt="立秋景色：长城与秋景山色" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            </div>
+                            <div class="p-6 flex-grow flex flex-col">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-10 h-10 rounded-full bg-autumn/20 flex items-center justify-center mr-3">
+                                        <i class="fa fa-pagelines text-autumn text-xl"></i>
+                                    </div>
+                                    <h3 class="text-2xl font-bold text-autumn">立秋</h3>
+                                </div>
+                                <p class="text-gray-600 mb-4 flex-grow">秋高气爽，硕果累累。适合登高望远，享受丰收喜悦。</p>
+                                <div class="text-autumn font-medium flex items-center mt-auto">
+                                    查看详情 <i class="fa fa-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 立冬模板 -->
+                        <div class="template-card bg-gradient-to-br from-winter/10 to-white rounded-2xl shadow-md overflow-hidden card-hover group" data-target="winter">
+                            <div class="h-64 overflow-hidden">
+                                <img src="https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/2c54b0bcdbdb4b9eb8374aaae7ad2ca9.jpg~tplv-a9rns2rl98-24:720:720.image?rcl=20250930190823ECE2A6D299FA34441261&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1759835303&x-signature=6L415YXi7odecIcThMtFotrlskc%3D" alt="立冬景色：积雪覆盖的古建筑屋顶" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            </div>
+                            <div class="p-6 flex-grow flex flex-col">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-10 h-10 rounded-full bg-winter/20 flex items-center justify-center mr-3">
+                                        <i class="fa fa-snowflake-o text-winter text-xl"></i>
+                                    </div>
+                                    <h3 class="text-2xl font-bold text-winter">立冬</h3>
+                                </div>
+                                <p class="text-gray-600 mb-4 flex-grow">冬意渐浓，万物蛰伏。注意保暖，养精蓄锐。</p>
+                                <div class="text-winter font-medium flex items-center mt-auto">
+                                    查看详情 <i class="fa fa-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <!-- 立春页面 - 包含吃食、穿搭和出行内容 -->
+        <section id="spring" class="section hidden">
+            <div class="relative h-[40vh] md:h-[50vh] flex items-center">
+                <div class="absolute inset-0 z-0">
+                    <img src="https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/eee9929ba12147ccb37f9ffe8aac0e67.jpg~tplv-a9rns2rl98-24:720:720.image?rcl=20250930190823ECE2A6D299FA34441261&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1759835303&x-signature=0GwGCoW8qcd3feLjTpz44oLoRFU%3D" alt="立春风景：有牛和农民在树下的乡村景象" class="w-full h-full object-cover opacity-50">
+                    <div class="absolute inset-0 bg-gradient-to-r from-spring/70 to-spring/30"></div>
+                </div>
+                <div class="container mx-auto px-4 z-10">
+                    <div class="flex items-center">
+                        <div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mr-4">
+                            <i class="fa fa-leaf text-white text-3xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-4xl md:text-5xl font-bold text-white text-shadow">立春</h1>
+                            <p class="text-white/90 text-lg mt-2">万物复苏，春意渐浓</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container mx-auto px-4 py-16">
+                <!-- 吃什么 -->
+                <div class="mb-20">
+                    <div class="flex items-center mb-8">
+                        <div class="w-12 h-12 rounded-full bg-spring/20 flex items-center justify-center mr-4">
+                            <i class="fa fa-cutlery text-spring text-xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800">吃什么 · 升发阳气</h2>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-md p-8 border-l-4 border-spring">
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <div class="md:w-1/3">
+                                <img src="https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/eee9929ba12147ccb37f9ffe8aac0e67.jpg~tplv-a9rns2rl98-24:720:720.image?rcl=20250930190823ECE2A6D299FA34441261&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1759835303&x-signature=0GwGCoW8qcd3feLjTpz44oLoRFU%3D" alt="立春时节的传统食物" class="w-full h-64 object-cover rounded-xl">
+                            </div>
+                            <div class="md:w-2/3">
+                                <div class="flex items-center mb-4">
+                                    <span class="inline-block px-3 py-1 bg-spring/10 text-spring rounded-full text-sm font-medium mr-2">关键词</span>
+                                    <span>新生</span>
+                                </div>
+                                <h3 class="text-xl font-semibold mb-4">暖心推荐</h3>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <i class="fa fa-check-circle text-spring mt-1 mr-2"></i>
+                                        <span>春饼：薄如纸的春饼卷上各种新鲜蔬菜，象征着万物复苏，生机勃勃。</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-check-circle text-spring mt-1 mr-2"></i>
+                                        <span>萝卜：民间有"咬春"的习俗，吃萝卜可以解春困，增强免疫力。</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-info-circle text-spring mt-1 mr-2"></i>
+                                        <span>吃点"辛甘之味"，如韭菜、洋葱等，有助于身体苏醒，迎接春天。</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 穿什么 -->
+                <div class="mb-20">
+                    <div class="flex items-center mb-8">
+                        <div class="w-12 h-12 rounded-full bg-spring/20 flex items-center justify-center mr-4">
+                            <i class="fa fa-shopping-bag text-spring text-xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800">穿什么 · 健康防护</h2>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-md p-8 border-l-4 border-spring">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4">看天穿衣</h3>
+                                <div class="bg-neutral rounded-xl p-6">
+                                    <p class="flex items-center mb-2">
+                                        <i class="fa fa-tshirt text-spring mr-2"></i>
+                                        <span class="font-medium">2层穿搭</span>
+                                    </p>
+                                    <p class="pl-6 text-gray-600">内衣+外套的组合，方便根据温度变化增减</p>
+                                    <p class="mt-4 pl-6 text-gray-700 italic">
+                                        "春捂秋冻"是传统智慧，立春后不要急于减少衣物，尤其注意脚部和颈部保暖
+                                    </p>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4">健康提醒</h3>
+                                <div class="bg-neutral rounded-xl p-6">
+                                    <p class="font-medium mb-3">防流感注意事项：</p>
+                                    <ul class="space-y-2">
+                                        <li class="flex items-start">
+                                            <i class="fa fa-medkit text-spring mt-1 mr-2"></i>
+                                            <span>老人和孩子建议接种流感疫苗</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fa fa-home text-spring mt-1 mr-2"></i>
+                                            <span>保持室内通风，定期消毒</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fa fa-heartbeat text-spring mt-1 mr-2"></i>
+                                            <span>加强锻炼，增强体质</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 做什么 -->
+                <div>
+                    <div class="flex items-center mb-8">
+                        <div class="w-12 h-12 rounded-full bg-spring/20 flex items-center justify-center mr-4">
+                            <i class="fa fa-heart-o text-spring text-xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800">做什么 · 动静皆宜</h2>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+                        <div class="md:flex">
+                            <div class="md:w-1/2">
+                                <img src="https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/eee9929ba12147ccb37f9ffe8aac0e67.jpg~tplv-a9rns2rl98-24:720:720.image?rcl=20250930190823ECE2A6D299FA34441261&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1759835303&x-signature=0GwGCoW8qcd3feLjTpz44oLoRFU%3D" alt="立春适合的户外活动" class="w-full h-full object-cover">
+                            </div>
+                            <div class="md:w-1/2 p-8">
+                                <div class="flex items-center mb-6">
+                                    <span class="text-4xl mr-3">🌿</span>
+                                    <h3 class="text-2xl font-semibold">适合踏青</h3>
+                                </div>
+                                <p class="text-gray-700 mb-6">
+                                    立春后，天气逐渐回暖，万物开始复苏，正是走出户外，感受大自然生机的好时机。
+                                </p>
+                                <ul class="space-y-4">
+                                    <li class="flex items-start">
+                                        <i class="fa fa-leaf text-spring mt-1 mr-3"></i>
+                                        <span>到公园或郊外散步，欣赏初开的花朵和抽芽的树木</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-hiking text-spring mt-1 mr-3"></i>
+                                        <span>适度进行户外活动，如放风筝、慢跑等，有助于舒展身心</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-seedling text-spring mt-1 mr-3"></i>
+                                        <span>可以尝试种植花草，体验生命成长的喜悦</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 立夏页面 - 包含吃食、穿搭和出行内容 -->
+        <section id="summer" class="section hidden">
+            <div class="relative h-[40vh] md:h-[50vh] flex items-center">
+                <div class="absolute inset-0 z-0">
+                    <img src="https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/373fb230c5c04e6bb537ddbffd7f0759.jpg~tplv-a9rns2rl98-24:720:720.image?rcl=20250930190823ECE2A6D299FA34441261&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1759835303&x-signature=PbqZ3yejNXwYXFehRsV%2BUOEvnjA%3D" alt="立夏风景：草地上有牛和木屋的乡村风光" class="w-full h-full object-cover opacity-50">
+                    <div class="absolute inset-0 bg-gradient-to-r from-summer/70 to-summer/30"></div>
+                </div>
+                <div class="container mx-auto px-4 z-10">
+                    <div class="flex items-center">
+                        <div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mr-4">
+                            <i class="fa fa-sun-o text-white text-3xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-4xl md:text-5xl font-bold text-white text-shadow">立夏</h1>
+                            <p class="text-white/90 text-lg mt-2">夏日初至，暑气渐升</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container mx-auto px-4 py-16">
+                <!-- 吃什么 -->
+                <div class="mb-20">
+                    <div class="flex items-center mb-8">
+                        <div class="w-12 h-12 rounded-full bg-summer/20 flex items-center justify-center mr-4">
+                            <i class="fa fa-cutlery text-summer text-xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800">吃什么 · 清心祛湿</h2>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-md p-8 border-l-4 border-summer">
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <div class="md:w-1/3">
+                                <img src="https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/373fb230c5c04e6bb537ddbffd7f0759.jpg~tplv-a9rns2rl98-24:720:720.image?rcl=20250930190823ECE2A6D299FA34441261&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1759835303&x-signature=PbqZ3yejNXwYXFehRsV%2BUOEvnjA%3D" alt="立夏时节的应季食物" class="w-full h-64 object-cover rounded-xl">
+                            </div>
+                            <div class="md:w-2/3">
+                                <div class="flex items-center mb-4">
+                                    <span class="inline-block px-3 py-1 bg-summer/10 text-summer rounded-full text-sm font-medium mr-2">关键词</span>
+                                    <span>清润</span>
+                                </div>
+                                <h3 class="text-xl font-semibold mb-4">暖心推荐</h3>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <i class="fa fa-check-circle text-summer mt-1 mr-2"></i>
+                                        <span>绿豆：绿豆汤是夏季经典饮品，具有清热解毒、利尿消暑的功效。</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-check-circle text-summer mt-1 mr-2"></i>
+                                        <span>苦瓜：虽然味苦，但能清热解暑、明目解毒，是夏季的理想食材。</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-info-circle text-summer mt-1 mr-2"></i>
+                                        <span>夏季饮食宜清淡，多吃新鲜蔬果，少吃辛辣油腻食物，保护脾胃。</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 穿什么 -->
+                <div class="mb-20">
+                    <div class="flex items-center mb-8">
+                        <div class="w-12 h-12 rounded-full bg-summer/20 flex items-center justify-center mr-4">
+                            <i class="fa fa-shopping-bag text-summer text-xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800">穿什么 · 健康防护</h2>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-md p-8 border-l-4 border-summer">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4">看天穿衣</h3>
+                                <div class="bg-neutral rounded-xl p-6">
+                                    <p class="flex items-center mb-2">
+                                        <i class="fa fa-tshirt text-summer mr-2"></i>
+                                        <span class="font-medium">1-2层薄衣</span>
+                                    </p>
+                                    <p class="pl-6 text-gray-600">选择透气、吸汗的棉质或亚麻材质衣物</p>
+                                    <p class="mt-4 pl-6 text-gray-700">
+                                        颜色以浅色系为宜，可反射阳光，减少热量吸收
+                                    </p>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4">健康提醒</h3>
+                                <div class="bg-neutral rounded-xl p-6">
+                                    <p class="font-medium mb-3">夏季防护要点：</p>
+                                    <ul class="space-y-2">
+                                        <li class="flex items-start">
+                                            <i class="fa fa-sun text-summer mt-1 mr-2"></i>
+                                            <span>出门涂抹防晒霜，戴帽子防晒</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fa fa-tint text-summer mt-1 mr-2"></i>
+                                            <span>随身携带水杯，及时补充水分</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fa fa-bug text-summer mt-1 mr-2"></i>
+                                            <span>注意防蚊虫叮咬，可随身携带驱蚊用品</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 做什么 -->
+                <div>
+                    <div class="flex items-center mb-8">
+                        <div class="w-12 h-12 rounded-full bg-summer/20 flex items-center justify-center mr-4">
+                            <i class="fa fa-heart-o text-summer text-xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800">做什么 · 动静皆宜</h2>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+                        <div class="md:flex">
+                            <div class="md:w-1/2">
+                                <img src="https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/373fb230c5c04e6bb537ddbffd7f0759.jpg~tplv-a9rns2rl98-24:720:720.image?rcl=20250930190823ECE2A6D299FA34441261&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1759835303&x-signature=PbqZ3yejNXwYXFehRsV%2BUOEvnjA%3D" alt="立夏适合的活动" class="w-full h-full object-cover">
+                            </div>
+                            <div class="md:w-1/2 p-8">
+                                <div class="flex items-center mb-6">
+                                    <span class="text-4xl mr-3">☀️</span>
+                                    <h3 class="text-2xl font-semibold">适合晨练或傍晚散步</h3>
+                                </div>
+                                <p class="text-gray-700 mb-6">
+                                    立夏后天气渐热，白天时间变长，选择合适的时间段进行户外活动，避开烈日高温。
+                                </p>
+                                <ul class="space-y-4">
+                                    <li class="flex items-start">
+                                        <i class="fa fa-running text-summer mt-1 mr-3"></i>
+                                        <span>早晨气温较低时进行适度锻炼，如太极拳、慢跑等</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-moon-o text-summer mt-1 mr-3"></i>
+                                        <span>傍晚时分可到公园散步，享受凉爽的晚风</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-swimming-pool text-summer mt-1 mr-3"></i>
+                                        <span>可以参与水上活动，如游泳，既清凉又能锻炼身体</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 立秋页面 - 包含吃食、穿搭和出行内容 -->
+        <section id="autumn" class="section hidden">
+            <div class="relative h-[40vh] md:h-[50vh] flex items-center">
+                <div class="absolute inset-0 z-0">
+                    <img src="https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/193ed074075a4507be06aa317f8d8fc3.jpg~tplv-a9rns2rl98-24:720:720.image?rcl=20250930190823ECE2A6D299FA34441261&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1759835303&x-signature=h26iPIrdVyLGyzPwPIN2TfGxjeg%3D" alt="立秋风景：长城与秋景山色" class="w-full h-full object-cover opacity-50">
+                    <div class="absolute inset-0 bg-gradient-to-r from-autumn/70 to-autumn/30"></div>
+                </div>
+                <div class="container mx-auto px-4 z-10">
+                    <div class="flex items-center">
+                        <div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mr-4">
+                            <i class="fa fa-pagelines text-white text-3xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-4xl md:text-5xl font-bold text-white text-shadow">立秋</h1>
+                            <p class="text-white/90 text-lg mt-2">秋高气爽，硕果累累</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container mx-auto px-4 py-16">
+                <!-- 吃什么 -->
+                <div class="mb-20">
+                    <div class="flex items-center mb-8">
+                        <div class="w-12 h-12 rounded-full bg-autumn/20 flex items-center justify-center mr-4">
+                            <i class="fa fa-cutlery text-autumn text-xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800">吃什么 · 滋阴润肺</h2>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-md p-8 border-l-4 border-autumn">
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <div class="md:w-1/3">
+                                <img src="https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/193ed074075a4507be06aa317f8d8fc3.jpg~tplv-a9rns2rl98-24:720:720.image?rcl=20250930190823ECE2A6D299FA34441261&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1759835303&x-signature=h26iPIrdVyLGyzPwPIN2TfGxjeg%3D" alt="立秋时节的应季食物" class="w-full h-64 object-cover rounded-xl">
+                            </div>
+                            <div class="md:w-2/3">
+                                <div class="flex items-center mb-4">
+                                    <span class="inline-block px-3 py-1 bg-autumn/10 text-autumn rounded-full text-sm font-medium mr-2">关键词</span>
+                                    <span>润燥</span>
+                                </div>
+                                <h3 class="text-xl font-semibold mb-4">暖心推荐</h3>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <i class="fa fa-check-circle text-autumn mt-1 mr-2"></i>
+                                        <span>梨：生吃或煮梨水，有润肺止咳、清热生津的功效，适合秋季食用。</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-check-circle text-autumn mt-1 mr-2"></i>
+                                        <span>南瓜：富含胡萝卜素和维生素，能增强免疫力，是秋季的应季食材。</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-info-circle text-autumn mt-1 mr-2"></i>
+                                        <span>秋季气候干燥，饮食应以滋阴润燥为主，少吃辛辣刺激性食物。</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 穿什么 -->
+                <div class="mb-20">
+                    <div class="flex items-center mb-8">
+                        <div class="w-12 h-12 rounded-full bg-autumn/20 flex items-center justify-center mr-4">
+                            <i class="fa fa-shopping-bag text-autumn text-xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800">穿什么 · 健康防护</h2>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-md p-8 border-l-4 border-autumn">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4">看天穿衣</h3>
+                                <div class="bg-neutral rounded-xl p-6">
+                                    <p class="flex items-center mb-2">
+                                        <i class="fa fa-tshirt text-autumn mr-2"></i>
+                                        <span class="font-medium">2-3层穿搭</span>
+                                    </p>
+                                    <p class="pl-6 text-gray-600">早晚温差大，可采用"洋葱式"穿衣法，方便增减</p>
+                                    <p class="mt-4 pl-6 text-gray-700">
+                                        选择轻便保暖的针织衫、薄外套等，既舒适又实用
+                                    </p>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4">健康提醒</h3>
+                                <div class="bg-neutral rounded-xl p-6">
+                                    <p class="font-medium mb-3">秋季养生要点：</p>
+                                    <ul class="space-y-2">
+                                        <li class="flex items-start">
+                                            <i class="fa fa-bed text-autumn mt-1 mr-2"></i>
+                                            <span>早睡早起，顺应自然界的收藏之势</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fa fa-tint text-autumn mt-1 mr-2"></i>
+                                            <span>注意皮肤保湿，防止秋季干燥引起不适</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fa fa-wind text-autumn mt-1 mr-2"></i>
+                                            <span>注意防风保暖，避免受凉感冒</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 做什么 -->
+                <div>
+                    <div class="flex items-center mb-8">
+                        <div class="w-12 h-12 rounded-full bg-autumn/20 flex items-center justify-center mr-4">
+                            <i class="fa fa-heart-o text-autumn text-xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800">做什么 · 动静皆宜</h2>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+                        <div class="md:flex">
+                            <div class="md:w-1/2">
+                                <img src="https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/193ed074075a4507be06aa317f8d8fc3.jpg~tplv-a9rns2rl98-24:720:720.image?rcl=20250930190823ECE2A6D299FA34441261&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1759835303&x-signature=h26iPIrdVyLGyzPwPIN2TfGxjeg%3D" alt="立秋适合的活动" class="w-full h-full object-cover">
+                            </div>
+                            <div class="md:w-1/2 p-8">
+                                <div class="flex items-center mb-6">
+                                    <span class="text-4xl mr-3">🍂</span>
+                                    <h3 class="text-2xl font-semibold">适合登高望远</h3>
+                                </div>
+                                <p class="text-gray-700 mb-6">
+                                    立秋后天气转凉，秋高气爽，是进行户外活动的好时节，尤其适合登高望远。
+                                </p>
+                                <ul class="space-y-4">
+                                    <li class="flex items-start">
+                                        <i class="fa fa-mountain text-autumn mt-1 mr-3"></i>
+                                        <span>登山远眺，既能欣赏秋日美景，又能锻炼身体，增强体质</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-camera text-autumn mt-1 mr-3"></i>
+                                        <span>外出摄影，记录秋日风光，感受大自然的变化</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-book text-autumn mt-1 mr-3"></i>
+                                        <span>天气凉爽时，可在户外阅读，享受宁静的秋日时光</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 立冬页面 - 包含吃食、穿搭和出行内容 -->
+        <section id="winter" class="section hidden">
+            <div class="relative h-[40vh] md:h-[50vh] flex items-center">
+                <div class="absolute inset-0 z-0">
+                    <img src="https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/2c54b0bcdbdb4b9eb8374aaae7ad2ca9.jpg~tplv-a9rns2rl98-24:720:720.image?rcl=20250930190823ECE2A6D299FA34441261&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1759835303&x-signature=6L415YXi7odecIcThMtFotrlskc%3D" alt="立冬景色：积雪覆盖的古建筑屋顶" class="w-full h-full object-cover opacity-50">
+                    <div class="absolute inset-0 bg-gradient-to-r from-winter/70 to-winter/30"></div>
+                </div>
+                <div class="container mx-auto px-4 z-10">
+                    <div class="flex items-center">
+                        <div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mr-4">
+                            <i class="fa fa-snowflake-o text-white text-3xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-4xl md:text-5xl font-bold text-white text-shadow">立冬</h1>
+                            <p class="text-white/90 text-lg mt-2">冬意渐浓，万物蛰伏</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container mx-auto px-4 py-16">
+                <!-- 吃什么 -->
+                <div class="mb-20">
+                    <div class="flex items-center mb-8">
+                        <div class="w-12 h-12 rounded-full bg-winter/20 flex items-center justify-center mr-4">
+                            <i class="fa fa-cutlery text-winter text-xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800">吃什么 · 温补养身</h2>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-md p-8 border-l-4 border-winter">
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <div class="md:w-1/3">
+                                <img src="https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/2c54b0bcdbdb4b9eb8374aaae7ad2ca9.jpg~tplv-a9rns2rl98-24:720:720.image?rcl=20250930190823ECE2A6D299FA34441261&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1759835303&x-signature=6L415YXi7odecIcThMtFotrlskc%3D" alt="立冬时节的应季食物" class="w-full h-64 object-cover rounded-xl">
+                            </div>
+                            <div class="md:w-2/3">
+                                <div class="flex items-center mb-4">
+                                    <span class="inline-block px-3 py-1 bg-winter/10 text-winter rounded-full text-sm font-medium mr-2">关键词</span>
+                                    <span>滋补</span>
+                                </div>
+                                <h3 class="text-xl font-semibold mb-4">暖心推荐</h3>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <i class="fa fa-check-circle text-winter mt-1 mr-2"></i>
+                                        <span>羊肉：性温味甘，能暖中补虚，是冬季御寒的佳品。</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-check-circle text-winter mt-1 mr-2"></i>
+                                        <span>栗子：有"千果之王"的美誉，能补肾强筋，适合冬季食用。</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-info-circle text-winter mt-1 mr-2"></i>
+                                        <span>冬季饮食宜温热，可适当吃些温补食物，增强身体抵抗力。</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 穿什么 -->
+                <div class="mb-20">
+                    <div class="flex items-center mb-8">
+                        <div class="w-12 h-12 rounded-full bg-winter/20 flex items-center justify-center mr-4">
+                            <i class="fa fa-shopping-bag text-winter text-xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800">穿什么 · 健康防护</h2>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-md p-8 border-l-4 border-winter">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4">看天穿衣</h3>
+                                <div class="bg-neutral rounded-xl p-6">
+                                    <p class="flex items-center mb-2">
+                                        <i class="fa fa-tshirt text-winter mr-2"></i>
+                                        <span class="font-medium">多层保暖穿搭</span>
+                                    </p>
+                                    <p class="pl-6 text-gray-600">内衣+毛衣+外套的组合，注重保暖防风</p>
+                                    <p class="mt-4 pl-6 text-gray-700">
+                                        特别注意手脚保暖，选择保暖性好的鞋袜
+                                    </p>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4">健康提醒</h3>
+                                <div class="bg-neutral rounded-xl p-6">
+                                    <p class="font-medium mb-3">冬季防护要点：</p>
+                                    <ul class="space-y-2">
+                                        <li class="flex items-start">
+                                            <i class="fa fa-thermometer-half text-winter mt-1 mr-2"></i>
+                                            <span>注意室内外温差，避免冷热交替引起感冒</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fa fa-snowflake-o text-winter mt-1 mr-2"></i>
+                                            <span>下雪天注意防滑，老年人尽量减少外出</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fa fa-home text-winter mt-1 mr-2"></i>
+                                            <span>保持室内适宜湿度，避免干燥引起呼吸道不适</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 做什么 -->
+                <div>
+                    <div class="flex items-center mb-8">
+                        <div class="w-12 h-12 rounded-full bg-winter/20 flex items-center justify-center mr-4">
+                            <i class="fa fa-heart-o text-winter text-xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800">做什么 · 动静皆宜</h2>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+                        <div class="md:flex">
+                            <div class="md:w-1/2">
+                                <img src="https://p3-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/2c54b0bcdbdb4b9eb8374aaae7ad2ca9.jpg~tplv-a9rns2rl98-24:720:720.image?rcl=20250930190823ECE2A6D299FA34441261&rk3s=8e244e95&rrcfp=8a172a1a&x-expires=1759835303&x-signature=6L415YXi7odecIcThMtFotrlskc%3D" alt="立冬适合的活动" class="w-full h-full object-cover">
+                            </div>
+                            <div class="md:w-1/2 p-8">
+                                <div class="flex items-center mb-6">
+                                    <span class="text-4xl mr-3">❄️</span>
+                                    <h3 class="text-2xl font-semibold">适合室内活动</h3>
+                                </div>
+                                <p class="text-gray-700 mb-6">
+                                    立冬后天气寒冷，户外活动减少，适合开展一些室内活动，既能保暖又能丰富生活。
+                                </p>
+                                <ul class="space-y-4">
+                                    <li class="flex items-start">
+                                        <i class="fa fa-book text-winter mt-1 mr-3"></i>
+                                        <span>阅读书籍，充实自我，是冬季里的一大乐事</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-fire text-winter mt-1 mr-3"></i>
+                                        <span>可以学习烹饪，制作温暖的食物，享受美食乐趣</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-dumbbell text-winter mt-1 mr-3"></i>
+                                        <span>进行室内运动，如瑜伽、健身等，保持身体健康</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-primary text-white py-10">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <h2 class="text-2xl font-bold mb-2">
+                        <i class="fa fa-leaf mr-2"></i>四立时节指南
+                    </h2>
+                    <p class="text-white/80">顺应自然，简约生活</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-white hover:text-white/80 transition-colors">
+                        <i class="fa fa-weibo text-xl"></i>
+                    </a>
+                    <a href="#" class="text-white hover:text-white/80 transition-colors">
+                        <i class="fa fa-wechat text-xl"></i>
+                    </a>
+                    <a href="#" class="text-white hover:text-white/80 transition-colors">
+                        <i class="fa fa-instagram text-xl"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="border-t border-white/20 mt-8 pt-8 text-center text-white/60">
+                <p>© 2023 四立时节指南 - 版权所有</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 移动端菜单切换
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 页面切换功能
+        document.querySelectorAll('.nav-link, .template-card').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('data-target');
+                
+                // 隐藏所有部分
+                document.querySelectorAll('.section').forEach(section => {
+                    section.classList.add('hidden');
+                    section.classList.remove('active');
+                });
+                
+                // 显示目标部分
+                document.getElementById(targetId).classList.remove('hidden');
+                document.getElementById(targetId).classList.add('active');
+                
+                // 关闭移动菜单（如果打开）
+                document.getElementById('mobile-menu').classList.add('hidden');
+                
+                // 滚动到顶部
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // 滚动时导航栏样式变化
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.classList.add('py-2', 'shadow');
+                header.classList.remove('py-4');
+            } else {
+                header.classList.add('py-4');
+                header.classList.remove('py-2', 'shadow');
+            }
+        });
+    </script>
+</body>
+</html>
